@@ -107,17 +107,6 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../lib/replset');
-        
-        // // Add server ssl options
-        // server.ssl({
-        //   sslOnNormalPorts:null,
-        //   sslPEMKeyFile: f('%s/ssl/server.pem', __dirname),
-        //   sslAllowInvalidCertificates:null
-        // }, {
-        //   ssl:true, 
-        //   rejectUnauthorized:false
-        // });
-
 
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -170,6 +159,65 @@ describe('ReplSet', function() {
 
         // Start set
         yield topology.start();
+
+        // Stop the set
+        yield topology.stop();
+
+        // Finish up
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
+
+    it('stepdown primary', function(done) {
+      this.timeout(50000);
+
+      co(function*() {
+        var ReplSet = require('../lib/replset');
+        
+        // Create new instance
+        var topology = new ReplSet('mongod', [{
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31000, 
+            dbpath: f('%s/../db/31000', __dirname)
+          }
+        }, {
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31001,
+            dbpath: f('%s/../db/31001', __dirname)
+          }
+        }, {
+          // Type of node
+          arbiter: true, 
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31002,
+            dbpath: f('%s/../db/31002', __dirname)
+          }
+        }], {
+          replSet: 'rs'
+        });
+
+        // Purge any directories
+        yield topology.purge();
+
+        // Start set
+        yield topology.start();
+
+        // Step down primary and block until we have a new primary
+        yield topology.stepDownPrimary(false, {stepDownSecs: 10});
+
+        // Step down primary and immediately return
+        yield topology.stepDownPrimary(true, {stepDownSecs: 10});
+
+        // Block waiting for a new primary to be elected
+        yield topology.waitForPrimary();
 
         // Stop the set
         yield topology.stop();
