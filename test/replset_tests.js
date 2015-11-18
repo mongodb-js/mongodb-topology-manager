@@ -505,5 +505,89 @@ describe('ReplSet', function() {
         console.log(err.stack);
       });
     });
+
+    it('reconfigure using existing configuration', function(done) {
+      this.timeout(100000);
+
+      co(function*() {
+        var ReplSet = require('../lib/replset');
+        
+        // Create new instance
+        var topology = new ReplSet('mongod', [{
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31000, 
+            dbpath: f('%s/../db/31000', __dirname)
+          }
+        }, {
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31001,
+            dbpath: f('%s/../db/31001', __dirname)
+          }
+        }, {
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31002,
+            dbpath: f('%s/../db/31002', __dirname)
+          }
+        }], {
+          replSet: 'rs'
+        });
+
+        // Purge any directories
+        yield topology.purge();
+
+        // Start set
+        yield topology.start();
+
+        // Get the configuration
+        var config = JSON.parse(JSON.stringify(topology.configurations[0]));
+        config.members[2].arbiterOnly = true;
+
+        // Force the reconfiguration
+        yield topology.reconfigure(config, {
+          returnImmediately:false, force:false
+        })
+
+        // Get the ismaster from the primary
+        var primary = yield topology.primary();
+        var ismaster = yield primary.ismaster();
+        console.log("=========================================== ismaster")
+        console.dir(ismaster)
+
+        // // Get all the secondaries
+        // var secondaries = yield topology.secondaries();
+
+        // // Put secondary in maintenance mode
+        // yield topology.maintenance(true, secondaries[0], {
+        //   returnImmediately: false
+        // });
+
+        // // Assert we have the expected number of instances
+        // var ismaster = yield secondaries[0].ismaster();
+        // assert.equal(false, ismaster.secondary);
+        // assert.equal(false, ismaster.ismaster);
+
+        // // Wait for server to come back
+        // yield topology.maintenance(false, secondaries[0], {
+        //   returnImmediately: false
+        // });
+
+        // var ismaster = yield secondaries[0].ismaster();
+        // assert.equal(true, ismaster.secondary);
+
+        // Stop the set
+        yield topology.stop();
+
+        // Finish up
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
   });
 });
