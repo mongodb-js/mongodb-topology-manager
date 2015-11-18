@@ -201,7 +201,9 @@ describe('ReplSet', function() {
             dbpath: f('%s/../db/31002', __dirname)
           }
         }], {
-          replSet: 'rs'
+          replSet: 'rs',
+          electionCycleWaitMS: 5000,
+          retryWaitMS: 1000
         });
 
         // Purge any directories
@@ -260,7 +262,9 @@ describe('ReplSet', function() {
             dbpath: f('%s/../db/31002', __dirname)
           }
         }], {
-          replSet: 'rs'
+          replSet: 'rs',
+          electionCycleWaitMS: 5000,
+          retryWaitMS: 1000
         });
 
         // Purge any directories
@@ -327,7 +331,9 @@ describe('ReplSet', function() {
             dbpath: f('%s/../db/31002', __dirname)
           }
         }], {
-          replSet: 'rs'
+          replSet: 'rs',
+          electionCycleWaitMS: 5000,
+          retryWaitMS: 1000
         });
 
         // Purge any directories
@@ -402,7 +408,9 @@ describe('ReplSet', function() {
             dbpath: f('%s/../db/31003', __dirname)
           }
         }], {
-          replSet: 'rs'
+          replSet: 'rs',
+          electionCycleWaitMS: 5000,
+          retryWaitMS: 1000
         });
 
         // Purge any directories
@@ -466,7 +474,9 @@ describe('ReplSet', function() {
             dbpath: f('%s/../db/31002', __dirname)
           }
         }], {
-          replSet: 'rs'
+          replSet: 'rs',
+          electionCycleWaitMS: 5000,
+          retryWaitMS: 1000
         });
 
         // Purge any directories
@@ -535,7 +545,9 @@ describe('ReplSet', function() {
             dbpath: f('%s/../db/31002', __dirname)
           }
         }], {
-          replSet: 'rs'
+          replSet: 'rs',
+          electionCycleWaitMS: 5000,
+          retryWaitMS: 1000
         });
 
         // Purge any directories
@@ -546,39 +558,17 @@ describe('ReplSet', function() {
 
         // Get the configuration
         var config = JSON.parse(JSON.stringify(topology.configurations[0]));
-        config.members[2].arbiterOnly = true;
+        config.members[2].priority = 10;
 
         // Force the reconfiguration
         yield topology.reconfigure(config, {
           returnImmediately:false, force:false
         })
 
-        // Get the ismaster from the primary
+        // Get the current configuration
         var primary = yield topology.primary();
-        var ismaster = yield primary.ismaster();
-        console.log("=========================================== ismaster")
-        console.dir(ismaster)
-
-        // // Get all the secondaries
-        // var secondaries = yield topology.secondaries();
-
-        // // Put secondary in maintenance mode
-        // yield topology.maintenance(true, secondaries[0], {
-        //   returnImmediately: false
-        // });
-
-        // // Assert we have the expected number of instances
-        // var ismaster = yield secondaries[0].ismaster();
-        // assert.equal(false, ismaster.secondary);
-        // assert.equal(false, ismaster.ismaster);
-
-        // // Wait for server to come back
-        // yield topology.maintenance(false, secondaries[0], {
-        //   returnImmediately: false
-        // });
-
-        // var ismaster = yield secondaries[0].ismaster();
-        // assert.equal(true, ismaster.secondary);
+        var currentConfig = yield topology.configuration(primary);
+        assert.equal(10, currentConfig.members[2].priority);
 
         // Stop the set
         yield topology.stop();
