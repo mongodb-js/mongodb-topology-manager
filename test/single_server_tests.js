@@ -167,11 +167,7 @@ describe('Server', function() {
 
         // Create new instance
         var server = new Server('mongod', {
-          dbpath: dbpath
-        });
-
-        // Add server ssl options
-        server.ssl({
+          dbpath: dbpath,
           sslOnNormalPorts:null,
           sslPEMKeyFile: f('%s/ssl/server.pem', __dirname),
           sslAllowInvalidCertificates:null
