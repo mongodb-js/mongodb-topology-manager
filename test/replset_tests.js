@@ -228,5 +228,143 @@ describe('ReplSet', function() {
         console.log(err.stack);
       });
     });
+
+    it('add new member to set', function(done) {
+      this.timeout(100000);
+
+      co(function*() {
+        var ReplSet = require('../lib/replset');
+        
+        // Create new instance
+        var topology = new ReplSet('mongod', [{
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31000, 
+            dbpath: f('%s/../db/31000', __dirname)
+          }
+        }, {
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31001,
+            dbpath: f('%s/../db/31001', __dirname)
+          }
+        }, {
+          // Type of node
+          arbiter: true, 
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31002,
+            dbpath: f('%s/../db/31002', __dirname)
+          }
+        }], {
+          replSet: 'rs'
+        });
+
+        // Purge any directories
+        yield topology.purge();
+
+        // Start set
+        yield topology.start();
+
+        // Add a new member to the set
+        var manager = yield topology.addMember({
+          options: {
+            bind_ip: 'localhost',
+            port: 31003,
+            dbpath: f('%s/../db/31003', __dirname)
+          }
+        }, {
+          returnImmediately: false, force:false
+        });
+
+        // Assert we have the expected number of instances
+        var primary = yield topology.primary();
+        var ismaster = yield primary.ismaster();
+        assert.equal(1, ismaster.arbiters.length);
+        assert.equal(3, ismaster.hosts.length);
+
+        // Stop the set
+        yield topology.stop();
+
+        // Finish up
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
+
+    it('remove member from set', function(done) {
+      this.timeout(100000);
+
+      co(function*() {
+        var ReplSet = require('../lib/replset');
+        
+        // Create new instance
+        var topology = new ReplSet('mongod', [{
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31000, 
+            dbpath: f('%s/../db/31000', __dirname)
+          }
+        }, {
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31001,
+            dbpath: f('%s/../db/31001', __dirname)
+          }
+        }, {
+          // Type of node
+          arbiter: true, 
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31002,
+            dbpath: f('%s/../db/31002', __dirname)
+          }
+        }, {
+          // mongod process options
+          options: {
+            bind_ip: 'localhost',
+            port: 31003,
+            dbpath: f('%s/../db/31003', __dirname)
+          }
+        }], {
+          replSet: 'rs'
+        });
+
+        // Purge any directories
+        yield topology.purge();
+
+        // Start set
+        yield topology.start();
+
+        // Get all the secondaries
+        var secondaries = yield topology.secondaries();
+
+        // Remove a member from the set
+        yield topology.removeMember(secondaries[0], {
+          returnImmediately: false, force: false
+        });
+
+        // Assert we have the expected number of instances
+        var primary = yield topology.primary();
+        var ismaster = yield primary.ismaster();
+        assert.equal(1, ismaster.arbiters.length);
+        assert.equal(2, ismaster.hosts.length);
+
+        // Stop the set
+        yield topology.stop();
+
+        // Finish up
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
   });
 });
