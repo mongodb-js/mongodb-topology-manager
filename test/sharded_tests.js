@@ -123,5 +123,92 @@ describe('Sharded', function() {
         console.log(err.stack);
       });
     });
+
+    it('create a sharded system with a single shard and take down mongos and bring it back', function(done) {
+      this.timeout(250000);
+
+      co(function*() {
+        var Sharded = require('../lib/sharded');        
+        // Create new instance
+        var topology = new Sharded({
+          mongod: 'mongod',
+          mongos: 'mongos'
+        });
+        
+        // Add one shard
+        yield topology.addShard([{
+          options: {
+            bind_ip: 'localhost', port: 31000, dbpath: f('%s/../db/31000', __dirname)
+          }
+        }, {
+          options: {
+            bind_ip: 'localhost', port: 31001, dbpath: f('%s/../db/31001', __dirname)
+          }
+        }, {
+          // Type of node
+          arbiter: true, 
+          // mongod process options
+          options: {
+            bind_ip: 'localhost', port: 31002, dbpath: f('%s/../db/31002', __dirname)
+          }
+        }], {
+          replSet: 'rs1'
+        });
+
+        // Add configuration servers
+        yield topology.addConfigurationServers([{
+          options: {
+            bind_ip: 'localhost', port: 35000, dbpath: f('%s/../db/35000', __dirname)
+          }
+        }, {
+          options: {
+            bind_ip: 'localhost', port: 35001, dbpath: f('%s/../db/35001', __dirname)
+          }
+        }, {
+          options: {
+            bind_ip: 'localhost', port: 35002, dbpath: f('%s/../db/35002', __dirname)
+          }
+        }], {
+          replSet: 'rs3'
+        });
+
+        // Add proxies
+        yield topology.addProxies([{
+          bind_ip: 'localhost', port: 51000, configdb: 'localhost:35000,localhost:35001,localhost:35002'
+        }, {
+          bind_ip: 'localhost', port: 51001, configdb: 'localhost:35000,localhost:35001,localhost:35002'
+        }], {
+          binary: 'mongos'
+        });
+
+        // Set the info level
+        Logger.setLevel('info');
+
+        // Start up topology
+        yield topology.start();
+
+        // Shard db
+        yield topology.enableSharding('test');
+        
+        // Shard a collection
+        yield topology.shardCollection('test', 'testcollection', {_id: 1});
+
+        // Get first proxy
+        var mongos = topology.proxies[0];
+        // Stop the proxy
+        yield mongos.stop();
+
+        // Start the proxy again
+        yield mongos.start();
+
+        // Stop the topology
+        yield topology.stop();
+
+        // All done
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
   });
 });
