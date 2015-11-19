@@ -29,7 +29,7 @@
     "co": "^4.6.0",
     "kerberos": "0.0.17",
     "mkdirp": "^0.5.1",
-    "mongodb-core": "^1.2.21",
+    "mongodb-core": "^1.2.23",
     "rimraf": "^2.4.3"
   },
   "devDependencies": {
