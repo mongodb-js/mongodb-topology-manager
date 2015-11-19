@@ -39,12 +39,10 @@ describe('Sharded', function() {
         
         // Add one shard
         yield topology.addShard([{
-          // mongod process options
           options: {
             bind_ip: 'localhost', port: 31000, dbpath: f('%s/../db/31000', __dirname)
           }
         }, {
-          // mongod process options
           options: {
             bind_ip: 'localhost', port: 31001, dbpath: f('%s/../db/31001', __dirname)
           }
@@ -61,12 +59,10 @@ describe('Sharded', function() {
 
         // Add one shard
         yield topology.addShard([{
-          // mongod process options
           options: {
             bind_ip: 'localhost', port: 31010, dbpath: f('%s/../db/31010', __dirname)
           }
         }, {
-          // mongod process options
           options: {
             bind_ip: 'localhost', port: 31011, dbpath: f('%s/../db/31011', __dirname)
           }
