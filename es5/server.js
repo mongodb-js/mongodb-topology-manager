@@ -78,11 +78,15 @@ var Server = (function () {
                     // Perform version match
                     var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/);
 
+                    // Check if we have ssl
+                    var sslMatch = stdout.match(/ssl/i);
+
                     // Resolve the server version
                     resolve({
                       version: versionMatch.toString().split('.').map(function (x) {
                         return parseInt(x, 10);
-                      })
+                      }),
+                      ssl: sslMatch != null
                     });
                   });
 
@@ -96,6 +100,76 @@ var Server = (function () {
       });
     }
   }, {
+    key: 'instance',
+    value: function instance(credentials, options) {
+      var self = this;
+      options = options || {};
+      options = clone(options);
+
+      return new Promise(function (resolve, reject) {
+        co(regeneratorRuntime.mark(function _callee2() {
+          var opt, s;
+          return regeneratorRuntime.wrap(function _callee2$(_context2) {
+            while (1) {
+              switch (_context2.prev = _context2.next) {
+                case 0:
+                  // Copy the basic options
+                  opt = clone(self.clientOptions);
+
+                  opt.host = self.options.bind_ip;
+                  opt.port = self.options.port;
+                  opt.connectionTimeout = 5000;
+                  opt.socketTimeout = 5000;
+                  opt.pool = 1;
+
+                  // Ensure we only connect once and emit any error caught
+                  opt.reconnect = false;
+                  opt.emitError = true;
+
+                  // Create an instance
+                  s = new CoreServer(opt);
+
+                  s.on('error', function (err) {
+                    reject(err);
+                  });
+
+                  s.on('close', function (err) {
+                    reject(err);
+                  });
+
+                  s.on('timeout', function (err) {
+                    reject(err);
+                  });
+
+                  s.on('connect', function (_server) {
+                    // Do we have credentials
+                    var authenticate = function authenticate(_server, _credentials, _callback) {
+                      if (!_credentials) return _callback();
+                      // Perform authentication using provided
+                      // credentials for this command
+                      _server.auth(_credentials.provider, _credentials.db, _credentials.user, _credentials.password, _callback);
+                    };
+
+                    // Perform any necessary authentication
+                    authenticate(_server, credentials, function (err) {
+                      if (err) return reject(err);
+                      resolve(_server);
+                    });
+                  });
+
+                  // Connect
+                  s.connect();
+
+                case 14:
+                case 'end':
+                  return _context2.stop();
+              }
+            }
+          }, _callee2, this);
+        }));
+      });
+    }
+  }, {
     key: 'executeCommand',
     value: function executeCommand(ns, command, credentials, options) {
       var self = this;
@@ -103,11 +177,11 @@ var Server = (function () {
       options = clone(options);
 
       return new Promise(function (resolve, reject) {
-        co(regeneratorRuntime.mark(function _callee2() {
+        co(regeneratorRuntime.mark(function _callee3() {
           var opt, executeCommand, s;
-          return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
-              switch (_context2.prev = _context2.next) {
+              switch (_context3.prev = _context3.next) {
                 case 0:
                   // Copy the basic options
                   opt = clone(self.clientOptions);
@@ -140,6 +214,7 @@ var Server = (function () {
                         _server.destroy();
                         return reject(err);
                       }
+
                       // Execute command
                       _server.command(_ns, _command, function (err, r) {
                         // Destroy the connection
@@ -191,11 +266,14 @@ var Server = (function () {
 
                 case 15:
                 case 'end':
-                  return _context2.stop();
+                  return _context3.stop();
               }
             }
-          }, _callee2, this);
-        })).catch(reject);
+          }, _callee3, this);
+        })).catch(function (err) {
+          if (options.ignoreError) return resolve({ ok: 1 });
+          reject(err);
+        });
       });
     }
   }, {
@@ -204,17 +282,17 @@ var Server = (function () {
       var self = this;
 
       return new Promise(function (resolve, reject) {
-        co(regeneratorRuntime.mark(function _callee3() {
+        co(regeneratorRuntime.mark(function _callee4() {
           var result, version, errors, options, commandOptions, name, commandLine, stdout, stderr;
-          return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          return regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
-              switch (_context3.prev = _context3.next) {
+              switch (_context4.prev = _context4.next) {
                 case 0:
-                  _context3.next = 2;
+                  _context4.next = 2;
                   return self.discover();
 
                 case 2:
-                  result = _context3.sent;
+                  result = _context4.sent;
                   version = result.version;
 
                   // All errors found during validation
@@ -228,11 +306,11 @@ var Server = (function () {
                   // Do we have any errors
 
                   if (!(errors.length > 0)) {
-                    _context3.next = 8;
+                    _context4.next = 8;
                     break;
                   }
 
-                  return _context3.abrupt('return', reject(errors));
+                  return _context4.abrupt('return', reject(errors));
 
                 case 8:
 
@@ -310,10 +388,10 @@ var Server = (function () {
 
                 case 20:
                 case 'end':
-                  return _context3.stop();
+                  return _context4.stop();
               }
             }
-          }, _callee3, this);
+          }, _callee4, this);
         })).catch(reject);
       });
     }
@@ -328,11 +406,11 @@ var Server = (function () {
       var self = this;
 
       return new Promise(function (resolve, reject) {
-        co(regeneratorRuntime.mark(function _callee4() {
+        co(regeneratorRuntime.mark(function _callee5() {
           var opt, s;
-          return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          return regeneratorRuntime.wrap(function _callee5$(_context5) {
             while (1) {
-              switch (_context4.prev = _context4.next) {
+              switch (_context5.prev = _context5.next) {
                 case 0:
                   // Copy the basic options
                   opt = clone(self.clientOptions);
@@ -381,10 +459,10 @@ var Server = (function () {
 
                 case 14:
                 case 'end':
-                  return _context4.stop();
+                  return _context5.stop();
               }
             }
-          }, _callee4, this);
+          }, _callee5, this);
         })).catch(reject);
       });
     }
@@ -399,10 +477,10 @@ var Server = (function () {
       var self = this;
 
       return new Promise(function (resolve, reject) {
-        co(regeneratorRuntime.mark(function _callee5() {
-          return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        co(regeneratorRuntime.mark(function _callee6() {
+          return regeneratorRuntime.wrap(function _callee6$(_context6) {
             while (1) {
-              switch (_context5.prev = _context5.next) {
+              switch (_context6.prev = _context6.next) {
                 case 0:
                   try {
                     // Delete the dbpath
@@ -419,10 +497,10 @@ var Server = (function () {
 
                 case 3:
                 case 'end':
-                  return _context5.stop();
+                  return _context6.stop();
               }
             }
-          }, _callee5, this);
+          }, _callee6, this);
         })).catch(reject);
       });
     }
@@ -433,17 +511,17 @@ var Server = (function () {
       signal = typeof signal == 'number' ? signal : signals.SIGTERM;
 
       return new Promise(function (resolve, reject) {
-        co(regeneratorRuntime.mark(function _callee6() {
-          return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        co(regeneratorRuntime.mark(function _callee7() {
+          return regeneratorRuntime.wrap(function _callee7$(_context7) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context7.prev = _context7.next) {
                 case 0:
                   if (self.process) {
-                    _context6.next = 2;
+                    _context7.next = 2;
                     break;
                   }
 
-                  return _context6.abrupt('return', resolve());
+                  return _context7.abrupt('return', resolve());
 
                 case 2:
                   // Wait for service to stop
@@ -459,10 +537,10 @@ var Server = (function () {
 
                 case 4:
                 case 'end':
-                  return _context6.stop();
+                  return _context7.stop();
               }
             }
-          }, _callee6, this);
+          }, _callee7, this);
         })).catch(reject);
       });
     }
@@ -472,25 +550,25 @@ var Server = (function () {
       var self = this;
 
       return new Promise(function (resolve, reject) {
-        co(regeneratorRuntime.mark(function _callee7() {
-          return regeneratorRuntime.wrap(function _callee7$(_context7) {
+        co(regeneratorRuntime.mark(function _callee8() {
+          return regeneratorRuntime.wrap(function _callee8$(_context8) {
             while (1) {
-              switch (_context7.prev = _context7.next) {
+              switch (_context8.prev = _context8.next) {
                 case 0:
-                  _context7.next = 2;
+                  _context8.next = 2;
                   return self.stop();
 
                 case 2:
                   if (!purge) {
-                    _context7.next = 5;
+                    _context8.next = 5;
                     break;
                   }
 
-                  _context7.next = 5;
+                  _context8.next = 5;
                   return self.purge();
 
                 case 5:
-                  _context7.next = 7;
+                  _context8.next = 7;
                   return self.start();
 
                 case 7:
@@ -498,10 +576,10 @@ var Server = (function () {
 
                 case 8:
                 case 'end':
-                  return _context7.stop();
+                  return _context8.stop();
               }
             }
-          }, _callee7, this);
+          }, _callee8, this);
         })).catch(reject);
       });
     }

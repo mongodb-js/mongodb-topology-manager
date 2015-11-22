@@ -82,11 +82,15 @@ var Mongos = (function () {
                     // Perform version match
                     var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/);
 
+                    // Check if we have ssl
+                    var sslMatch = stdout.match(/ssl/i);
+
                     // Resolve the server version
                     resolve({
                       version: versionMatch.toString().split('.').map(function (x) {
                         return parseInt(x, 10);
-                      })
+                      }),
+                      ssl: sslMatch != null
                     });
                   });
 

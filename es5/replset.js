@@ -8,6 +8,7 @@ var co = require('co'),
     f = require('util').format,
     mkdirp = require('mkdirp'),
     rimraf = require('rimraf'),
+    Logger = require('./logger'),
     Server = require('./server'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
@@ -34,6 +35,9 @@ var ReplSet = (function () {
     // Save the default passed in parameters
     this.nodes = nodes;
     this.options = clone(options);
+
+    // Create logger instance
+    this.logger = Logger('ReplSet', options);
 
     // Did we specify special settings for the configuration JSON used
     // to set up the replicaset (delete it from the internal options after
@@ -129,12 +133,22 @@ var ReplSet = (function () {
                     // Perform version match
                     var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/);
 
-                    // Resolve the server version
-                    resolve({
+                    // Check if we have ssl
+                    var sslMatch = stdout.match(/ssl/i);
+                    // Final result
+                    var result = {
                       version: versionMatch.toString().split('.').map(function (x) {
                         return parseInt(x, 10);
-                      })
-                    });
+                      }),
+                      ssl: sslMatch != null
+                    };
+
+                    if (self.logger.isInfo()) {
+                      self.logger.info(f('mongod discovery returned %s', JSON.stringify(result)));
+                    }
+
+                    // Resolve the server version
+                    resolve(result);
                   });
 
                 case 7:
@@ -187,24 +201,27 @@ var ReplSet = (function () {
                   // Time to configure the servers by generating the
                   config = generateConfiguration(self.replSet, self.version, self.nodes, self.configSettings);
 
-                  // Pick the first manager and execute replicaset configuration
+                  if (self.logger.isInfo()) {
+                    self.logger.info(f('initialize replicaset with config %s', JSON.stringify(config)));
+                  }
 
-                  _context2.next = 12;
+                  // Pick the first manager and execute replicaset configuration
+                  _context2.next = 13;
                   return self.managers[0].executeCommand('admin.$cmd', {
                     replSetInitiate: config
                   }, null, { ignoreError: true });
 
-                case 12:
+                case 13:
                   result = _context2.sent;
 
                   if (!(result.ok == 0)) {
-                    _context2.next = 15;
+                    _context2.next = 16;
                     break;
                   }
 
                   return _context2.abrupt('return', reject(new Error(f('failed to initialize replicaset with config %s', JSON.stringify(config)))));
 
-                case 15:
+                case 16:
 
                   // Push configuration to the history
                   self.configurations.push(config);
@@ -219,16 +236,16 @@ var ReplSet = (function () {
 
                   // Now monitor until we have all the servers in a healthy state
 
-                case 18:
+                case 19:
                   if (!true) {
-                    _context2.next = 32;
+                    _context2.next = 38;
                     break;
                   }
 
-                  _context2.next = 21;
+                  _context2.next = 22;
                   return waitMS(1000);
 
-                case 21:
+                case 22:
 
                   // Monitoring state
                   state = {
@@ -239,22 +256,23 @@ var ReplSet = (function () {
 
                   // Get the replicaset status
 
-                  _context2.next = 24;
+                  _context2.prev = 23;
+                  _context2.next = 26;
                   return self.managers[0].executeCommand('admin.$cmd', {
                     replSetGetStatus: true
                   });
 
-                case 24:
+                case 26:
                   result = _context2.sent;
+                  _context2.next = 32;
+                  break;
 
-                  if (!(result.ok == 0)) {
-                    _context2.next = 27;
-                    break;
-                  }
+                case 29:
+                  _context2.prev = 29;
+                  _context2.t0 = _context2['catch'](23);
+                  return _context2.abrupt('continue', 19);
 
-                  return _context2.abrupt('return', reject(new Error(f('failed to execute replSetGetStatus against replicaset with config %s', JSON.stringify(config)))));
-
-                case 27:
+                case 32:
 
                   // Sum up expected servers
                   for (i = 0; i < result.members.length; i++) {
@@ -275,28 +293,28 @@ var ReplSet = (function () {
                     }
                   }
 
+                  if (self.logger.isInfo()) {
+                    self.logger.info(f('replicaset current state %s', JSON.stringify(state)));
+                  }
+
                   // Validate the state
 
                   if (!(state.primaries == 1 && state.arbiters == numberOfArbiters && state.secondaries == self.nodes.length - numberOfArbiters - 1)) {
-                    _context2.next = 30;
+                    _context2.next = 36;
                     break;
                   }
 
-                  return _context2.abrupt('break', 32);
-
-                case 30:
-                  _context2.next = 18;
-                  break;
-
-                case 32:
-                  _context2.next = 34;
-                  return self.waitForPrimary();
-
-                case 34:
-                  _context2.next = 36;
-                  return self.managers[0].ismaster();
+                  return _context2.abrupt('break', 38);
 
                 case 36:
+                  _context2.next = 19;
+                  break;
+
+                case 38:
+                  _context2.next = 40;
+                  return self.managers[0].ismaster();
+
+                case 40:
                   ismaster = _context2.sent;
 
                   // Save the current election Id if it exists
@@ -306,12 +324,12 @@ var ReplSet = (function () {
                   // We have a stable replicaset
                   resolve();
 
-                case 40:
+                case 44:
                 case 'end':
                   return _context2.stop();
               }
             }
-          }, _callee2, this);
+          }, _callee2, this, [[23, 29]]);
         })).catch(reject);
       });
     }
@@ -739,33 +757,70 @@ var ReplSet = (function () {
   }, {
     key: 'configuration',
     value: function configuration(manager, credentials) {
+      var self = this;
+
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee8() {
-          var result;
+          var result, server, cursor;
           return regeneratorRuntime.wrap(function _callee8$(_context8) {
             while (1) {
               switch (_context8.prev = _context8.next) {
                 case 0:
                   _context8.next = 2;
-                  return manager.executeCommand('admin.$cmd', {
-                    replSetGetConfig: true
-                  }, credentials);
+                  return self.discover();
 
                 case 2:
                   result = _context8.sent;
 
+                  if (!(result[0] >= 3)) {
+                    _context8.next = 12;
+                    break;
+                  }
+
+                  _context8.next = 6;
+                  return manager.executeCommand('admin.$cmd', {
+                    replSetGetConfig: true
+                  }, credentials);
+
+                case 6:
+                  result = _context8.sent;
+
                   if (!(result && result.ok == 0)) {
-                    _context8.next = 5;
+                    _context8.next = 9;
                     break;
                   }
 
                   return _context8.abrupt('return', reject(new Error(f('failed to execute replSetGetConfig against server [%s]', node.name))));
 
-                case 5:
+                case 9:
 
                   resolve(result.config);
+                  _context8.next = 17;
+                  break;
 
-                case 6:
+                case 12:
+                  _context8.next = 14;
+                  return manager.instance(credentials);
+
+                case 14:
+                  server = _context8.sent;
+
+                  // Get the configuration document
+                  cursor = server.cursor('local.system.replset', {
+                    find: 'local.system.replset',
+                    query: {},
+                    limit: 1
+                  });
+
+                  // Execute next
+
+                  cursor.next(function (err, d) {
+                    if (err) return reject(err);
+                    if (!d) return reject(new Error('no replicaset configuration found'));
+                    resolve(d);
+                  });
+
+                case 17:
                 case 'end':
                   return _context8.stop();
               }
@@ -834,7 +889,7 @@ var ReplSet = (function () {
                   _context9.next = 11;
                   return primary.executeCommand('admin.$cmd', {
                     replSetReconfig: config, force: force
-                  }, credentials);
+                  }, credentials, { ignoreError: true });
 
                 case 11:
                   result = _context9.sent;
@@ -1125,7 +1180,7 @@ var ReplSet = (function () {
 
                 case 40:
                   if (!true) {
-                    _context10.next = 75;
+                    _context10.next = 77;
                     break;
                   }
 
@@ -1167,46 +1222,50 @@ var ReplSet = (function () {
                   return waitMS(self.electionCycleWaitMS);
 
                 case 59:
-                  _context10.next = 67;
+                  _context10.next = 69;
                   break;
 
                 case 61:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && waitedForElectionCycle)) {
-                    _context10.next = 65;
+                    _context10.next = 67;
                     break;
                   }
 
+                  _context10.next = 64;
+                  return self.waitForPrimary();
+
+                case 64:
                   return _context10.abrupt('return', resolve(server));
 
-                case 65:
-                  _context10.next = 67;
-                  return waitMS(self.retryWaitMS);
-
                 case 67:
-                  _context10.next = 73;
-                  break;
+                  _context10.next = 69;
+                  return waitMS(self.retryWaitMS);
 
                 case 69:
-                  _context10.prev = 69;
+                  _context10.next = 75;
+                  break;
+
+                case 71:
+                  _context10.prev = 71;
                   _context10.t0 = _context10['catch'](41);
-                  _context10.next = 73;
+                  _context10.next = 75;
                   return waitMS(self.retryWaitMS);
 
-                case 73:
+                case 75:
                   _context10.next = 40;
                   break;
 
-                case 75:
+                case 77:
 
                   // Should not reach here
                   reject(new Error(f('failed to successfully add a new member with options [%s]', JSON.stringify(node))));
 
-                case 76:
+                case 78:
                 case 'end':
                   return _context10.stop();
               }
             }
-          }, _callee10, this, [[41, 69]]);
+          }, _callee10, this, [[41, 71]]);
         })).catch(reject);
       });
     }
@@ -1272,19 +1331,10 @@ var ReplSet = (function () {
                   _context11.next = 11;
                   return primary.executeCommand('admin.$cmd', {
                     replSetReconfig: config, force: force
-                  }, credentials);
+                  }, credentials, { ignoreError: true });
 
                 case 11:
                   result = _context11.sent;
-
-                  if (!(result && result.ok == 0)) {
-                    _context11.next = 14;
-                    break;
-                  }
-
-                  return _context11.abrupt('return', reject(new Error(f('failed to execute replSetReconfig with configuration [%s]', JSON.stringify(config)))));
-
-                case 14:
 
                   // Push new configuration to list
                   self.configurations.push(config);
@@ -1297,100 +1347,104 @@ var ReplSet = (function () {
                   // If we want to return immediately do so now
 
                   if (!returnImmediately) {
-                    _context11.next = 20;
+                    _context11.next = 18;
                     break;
                   }
 
-                  _context11.next = 19;
+                  _context11.next = 17;
                   return node.stop();
 
-                case 19:
+                case 17:
                   return _context11.abrupt('return', resolve());
 
-                case 20:
+                case 18:
 
                   // Found a valid state
                   waitedForElectionCycle = false;
 
                   // Wait for the server to get in a stable state
 
-                case 21:
+                case 19:
                   if (!true) {
                     _context11.next = 67;
                     break;
                   }
 
-                  _context11.prev = 22;
-                  _context11.next = 25;
+                  _context11.prev = 20;
+                  _context11.next = 23;
                   return self.primary();
 
-                case 25:
+                case 23:
                   primary = _context11.sent;
 
                   if (primary) {
-                    _context11.next = 30;
+                    _context11.next = 28;
                     break;
                   }
 
-                  _context11.next = 29;
+                  _context11.next = 27;
                   return waitMS(self.retryWaitMS);
 
-                case 29:
-                  return _context11.abrupt('continue', 21);
+                case 27:
+                  return _context11.abrupt('continue', 19);
 
-                case 30:
-                  _context11.next = 32;
+                case 28:
+                  _context11.next = 30;
                   return primary.ismaster();
 
-                case 32:
+                case 30:
                   ismaster = _context11.sent;
 
                   if (!(ismaster.ismaster && ismaster.electionId && !self.electionId.equals(ismaster.electionId))) {
-                    _context11.next = 41;
+                    _context11.next = 39;
                     break;
                   }
 
-                  _context11.next = 36;
+                  _context11.next = 34;
                   return self.waitForPrimary();
 
-                case 36:
-                  _context11.next = 38;
+                case 34:
+                  _context11.next = 36;
                   return node.stop();
 
-                case 38:
+                case 36:
                   return _context11.abrupt('return', resolve());
 
-                case 41:
+                case 39:
                   if (!((ismaster.secondary || ismaster.arbiterOnly) && ismaster.electionId && self.electionId.equals(ismaster.electionId))) {
-                    _context11.next = 45;
+                    _context11.next = 43;
                     break;
                   }
 
                   return _context11.abrupt('return', resolve());
 
-                case 45:
+                case 43:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && !waitedForElectionCycle)) {
-                    _context11.next = 51;
+                    _context11.next = 49;
                     break;
                   }
 
                   // Wait for an election cycle to have passed
                   waitedForElectionCycle = true;
-                  _context11.next = 49;
+                  _context11.next = 47;
                   return waitMS(self.electionCycleWaitMS);
 
-                case 49:
+                case 47:
                   _context11.next = 59;
                   break;
 
-                case 51:
+                case 49:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && waitedForElectionCycle)) {
                     _context11.next = 57;
                     break;
                   }
 
-                  _context11.next = 54;
+                  _context11.next = 52;
                   return node.stop();
+
+                case 52:
+                  _context11.next = 54;
+                  return self.waitForPrimary();
 
                 case 54:
                   return _context11.abrupt('return', resolve());
@@ -1405,12 +1459,12 @@ var ReplSet = (function () {
 
                 case 61:
                   _context11.prev = 61;
-                  _context11.t0 = _context11['catch'](22);
+                  _context11.t0 = _context11['catch'](20);
                   _context11.next = 65;
                   return waitMS(self.retryWaitMS);
 
                 case 65:
-                  _context11.next = 21;
+                  _context11.next = 19;
                   break;
 
                 case 67:
@@ -1423,7 +1477,7 @@ var ReplSet = (function () {
                   return _context11.stop();
               }
             }
-          }, _callee11, this, [[22, 61]]);
+          }, _callee11, this, [[20, 61]]);
         }));
       });
     }
