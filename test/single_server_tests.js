@@ -4,13 +4,21 @@ var co = require('co'),
   f = require('util').format,
   assert = require('assert');
 
+// Polyfill Promise if none exists
+if(!global.Promise) {
+  require('es6-promise').polyfill();
+}
+
+// Get babel polyfill
+require("babel-polyfill");
+
 describe('Server', function() {
   describe('manager', function() {
     it('establish server version', function(done) {
       this.timeout(50000);
 
       co(function*() {
-        var Server = require('../lib/server');
+        var Server = require('../').Server;
         // Create new instance
         var server = new Server();
         // Perform discovery
@@ -29,7 +37,7 @@ describe('Server', function() {
       this.timeout(50000);
 
       co(function*() {
-        var Server = require('../lib/server');
+        var Server = require('../').Server;
 
         // Create dbpath
         var dbpath = f('%s/../db', __dirname);
@@ -59,7 +67,7 @@ describe('Server', function() {
       this.timeout(50000);
 
       co(function*() {
-        var Server = require('../lib/server');
+        var Server = require('../').Server;
 
         // Create dbpath
         var dbpath = f('%s/../db', __dirname);
@@ -98,7 +106,7 @@ describe('Server', function() {
       this.timeout(50000);
 
       co(function*() {
-        var Server = require('../lib/server');
+        var Server = require('../').Server;
 
         // Create dbpath
         var dbpath = f('%s/../db', __dirname);
@@ -129,7 +137,7 @@ describe('Server', function() {
       this.timeout(50000);
 
       co(function*() {
-        var Server = require('../lib/server');
+        var Server = require('../').Server;
 
         // Create dbpath
         var dbpath = f('%s/../db', __dirname);
@@ -160,7 +168,7 @@ describe('Server', function() {
       this.timeout(50000);
 
       co(function*() {
-        var Server = require('../lib/server');
+        var Server = require('../').Server;
 
         // Create dbpath
         var dbpath = f('%s/../db', __dirname);
@@ -175,6 +183,11 @@ describe('Server', function() {
           ssl:true, 
           rejectUnauthorized:false
         });
+
+        // Perform discovery
+        var result = yield server.discover();
+        // Skip ssl test
+        if(!result.ssl) return done();
 
         // Start process
         yield server.start();

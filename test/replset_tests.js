@@ -2,15 +2,16 @@
 
 var co = require('co'),
   f = require('util').format,
+  Logger = require('../lib/logger'),  
   assert = require('assert');
 
 describe('ReplSet', function() {
   describe('manager', function() {
     it('establish server version', function(done) {
-      this.timeout(50000);
+      this.timeout(1000000);
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
         
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -53,10 +54,10 @@ describe('ReplSet', function() {
     });
 
     it('start simple replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
-      this.timeout(50000);
+      this.timeout(1000000);
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
         
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -103,10 +104,10 @@ describe('ReplSet', function() {
     });
 
     it('start simple ssl replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
-      this.timeout(50000);
+      this.timeout(200000);
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
 
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -154,6 +155,11 @@ describe('ReplSet', function() {
           rejectUnauthorized:false
         });
 
+        // Perform discovery
+        var result = yield topology.discover();
+        // Skip ssl test
+        if(!result.ssl) return done();
+
         // Purge any directories
         yield topology.purge();
 
@@ -171,10 +177,10 @@ describe('ReplSet', function() {
     });
 
     it('stepdown primary', function(done) {
-      this.timeout(50000);
+      this.timeout(200000);
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
         
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -232,10 +238,10 @@ describe('ReplSet', function() {
     });
 
     it('add new member to set', function(done) {
-      this.timeout(100000);
+      this.timeout(200000);
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
         
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -301,10 +307,13 @@ describe('ReplSet', function() {
     });
 
     it('add new member to set with high priority', function(done) {
-      this.timeout(100000);
+      this.timeout(200000);
+
+      // // Set the info level
+      // Logger.setLevel('info');
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
         
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -371,10 +380,10 @@ describe('ReplSet', function() {
     });
 
     it('remove member from set', function(done) {
-      this.timeout(100000);
+      this.timeout(200000);
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
         
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -444,10 +453,10 @@ describe('ReplSet', function() {
     });
 
     it('put secondary in maintenance mode', function(done) {
-      this.timeout(100000);
+      this.timeout(200000);
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
         
         // Create new instance
         var topology = new ReplSet('mongod', [{
@@ -517,10 +526,10 @@ describe('ReplSet', function() {
     });
 
     it('reconfigure using existing configuration', function(done) {
-      this.timeout(100000);
+      this.timeout(200000);
 
       co(function*() {
-        var ReplSet = require('../lib/replset');
+        var ReplSet = require('../').ReplSet;
         
         // Create new instance
         var topology = new ReplSet('mongod', [{
