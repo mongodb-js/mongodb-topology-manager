@@ -5,6 +5,14 @@ var co = require('co'),
   Logger = require('../lib/logger'),  
   assert = require('assert');
 
+// Polyfill Promise if none exists
+if(!global.Promise) {
+  require('es6-promise').polyfill();
+}
+
+// Get babel polyfill
+require("babel-polyfill");
+
 describe('ReplSet', function() {
   describe('manager', function() {
     it('establish server version', function(done) {
