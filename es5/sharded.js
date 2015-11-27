@@ -42,7 +42,6 @@ var Sharded = (function () {
     _classCallCheck(this, Sharded);
 
     options = options || {};
-
     // Unpack default runtime information
     this.mongod = options.mongod || 'mongod';
     this.mongos = options.mongos || 'mongos';
@@ -476,8 +475,8 @@ var Sharded = (function () {
       });
     }
   }, {
-    key: 'stop',
-    value: function stop() {
+    key: 'purge',
+    value: function purge() {
       var self = this;
 
       return new Promise(function (resolve, reject) {
@@ -497,7 +496,7 @@ var Sharded = (function () {
                 case 2:
 
                   if (self.logger.isInfo()) {
-                    self.logger.info(f('Shutting down mongos proxies'));
+                    self.logger.info(f('purging mongo proxy directories'));
                   }
 
                   // Shutdown all the proxies
@@ -510,7 +509,7 @@ var Sharded = (function () {
                   }
 
                   _context8.next = 7;
-                  return self.proxies[i].stop();
+                  return self.proxies[i].purge();
 
                 case 7:
                   i++;
@@ -520,11 +519,113 @@ var Sharded = (function () {
                 case 10:
 
                   if (self.logger.isInfo()) {
+                    self.logger.info(f('purging configuration server directories'));
+                  }
+
+                  // Shutdown configuration server
+
+                  if (!self.configurationServers) {
+                    _context8.next = 14;
+                    break;
+                  }
+
+                  _context8.next = 14;
+                  return self.configurationServers.purge();
+
+                case 14:
+
+                  if (self.logger.isInfo()) {
+                    self.logger.info(f('puring shard directories'));
+                  }
+
+                  // Shutdown all the shards
+                  i = 0;
+
+                case 16:
+                  if (!(i < self.shards.length)) {
+                    _context8.next = 22;
+                    break;
+                  }
+
+                  _context8.next = 19;
+                  return self.shards[i].purge();
+
+                case 19:
+                  i++;
+                  _context8.next = 16;
+                  break;
+
+                case 22:
+
+                  if (self.logger.isInfo()) {
+                    self.logger.info(f('done purging directories for topology'));
+                  }
+
+                  // Set the state to running
+                  self.state == 'running';
+
+                  // Resolve
+                  resolve();
+
+                case 25:
+                case 'end':
+                  return _context8.stop();
+              }
+            }
+          }, _callee8, this);
+        })).catch(reportError(self, reject));
+      });
+    }
+  }, {
+    key: 'stop',
+    value: function stop() {
+      var self = this;
+
+      return new Promise(function (resolve, reject) {
+        co(regeneratorRuntime.mark(function _callee9() {
+          var i;
+          return regeneratorRuntime.wrap(function _callee9$(_context9) {
+            while (1) {
+              switch (_context9.prev = _context9.next) {
+                case 0:
+                  if (!(self.state == 'running')) {
+                    _context9.next = 2;
+                    break;
+                  }
+
+                  return _context9.abrupt('return', resolve());
+
+                case 2:
+
+                  if (self.logger.isInfo()) {
+                    self.logger.info(f('Shutting down mongos proxies'));
+                  }
+
+                  // Shutdown all the proxies
+                  i = 0;
+
+                case 4:
+                  if (!(i < self.proxies.length)) {
+                    _context9.next = 10;
+                    break;
+                  }
+
+                  _context9.next = 7;
+                  return self.proxies[i].stop();
+
+                case 7:
+                  i++;
+                  _context9.next = 4;
+                  break;
+
+                case 10:
+
+                  if (self.logger.isInfo()) {
                     self.logger.info(f('Shutting down configuration servers'));
                   }
 
                   // Shutdown configuration server
-                  _context8.next = 13;
+                  _context9.next = 13;
                   return self.configurationServers.stop();
 
                 case 13:
@@ -538,16 +639,16 @@ var Sharded = (function () {
 
                 case 15:
                   if (!(i < self.shards.length)) {
-                    _context8.next = 21;
+                    _context9.next = 21;
                     break;
                   }
 
-                  _context8.next = 18;
+                  _context9.next = 18;
                   return self.shards[i].stop();
 
                 case 18:
                   i++;
-                  _context8.next = 15;
+                  _context9.next = 15;
                   break;
 
                 case 21:
@@ -564,10 +665,10 @@ var Sharded = (function () {
 
                 case 24:
                 case 'end':
-                  return _context8.stop();
+                  return _context9.stop();
               }
             }
-          }, _callee8, this);
+          }, _callee9, this);
         })).catch(reportError(self, reject));
       });
     }
@@ -577,16 +678,16 @@ var Sharded = (function () {
       var self = this;
 
       return new Promise(function (resolve, reject) {
-        co(regeneratorRuntime.mark(function _callee9() {
-          return regeneratorRuntime.wrap(function _callee9$(_context9) {
+        co(regeneratorRuntime.mark(function _callee10() {
+          return regeneratorRuntime.wrap(function _callee10$(_context10) {
             while (1) {
-              switch (_context9.prev = _context9.next) {
+              switch (_context10.prev = _context10.next) {
                 case 0:
                 case 'end':
-                  return _context9.stop();
+                  return _context10.stop();
               }
             }
-          }, _callee9, this);
+          }, _callee10, this);
         })).catch(reportError(self, reject));
       });
     }

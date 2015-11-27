@@ -8,6 +8,7 @@ var co = require('co'),
     f = require('util').format,
     mkdirp = require('mkdirp'),
     rimraf = require('rimraf'),
+    Logger = require('./logger'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 
@@ -26,6 +27,9 @@ var Server = (function () {
 
     // Server state
     this.state = 'stopped';
+
+    // Create logger instance
+    this.logger = Logger('Server', options);
 
     // Unpack default runtime information
     this.binary = binary || 'mongod';
@@ -189,7 +193,7 @@ var Server = (function () {
                   opt.host = self.options.bind_ip;
                   opt.port = self.options.port;
                   opt.connectionTimeout = 5000;
-                  opt.socketTimeout = 5000;
+                  opt.socketTimeout = 0;
                   opt.pool = 1;
 
                   // Ensure we only connect once and emit any error caught
@@ -301,7 +305,9 @@ var Server = (function () {
 
                   // Ensure basic parameters
 
-                  if (!self.options.dbpath) errors.push(new Error('dbpath is required'));
+                  if (!self.options.dbpath) {
+                    errors.push(new Error('dbpath is required'));
+                  }
 
                   // Do we have any errors
 
@@ -337,11 +343,12 @@ var Server = (function () {
 
                   // Command line
                   commandLine = f('%s %s', self.binary, commandOptions.join(' '));
-                  // console.log("---------------- start server")
-                  // console.dir(commandLine)
+
+                  if (self.logger.isInfo()) {
+                    self.logger.info(f('started mongod with [%s]', commandLine));
+                  }
 
                   // Spawn a mongod process
-
                   self.process = spawn(self.binary, commandOptions);
 
                   // Variables receiving data
@@ -352,12 +359,11 @@ var Server = (function () {
 
                   self.process.stdout.on('data', function (data) {
                     stdout += data.toString();
-                    // console.log(data.toString())
 
                     //
                     // Only emit event at start
                     if (self.state == 'stopped') {
-                      if (stdout.indexOf('waiting for connections') != -1) {
+                      if (stdout.indexOf('waiting for connections') != -1 || stdout.indexOf('connection accepted') != -1) {
                         // Mark state as running
                         self.state = 'running';
                         // Resolve
@@ -378,7 +384,6 @@ var Server = (function () {
 
                   // Process terminated
                   self.process.on('close', function (code) {
-
                     if (self.state == 'stopped' && stdout == '' || code != 0) {
                       return reject(new Error(f('failed to start mongod with options %s', commandOptions)));
                     }
@@ -386,7 +391,7 @@ var Server = (function () {
                     self.state = 'stopped';
                   });
 
-                case 20:
+                case 21:
                 case 'end':
                   return _context4.stop();
               }
@@ -517,13 +522,17 @@ var Server = (function () {
               switch (_context7.prev = _context7.next) {
                 case 0:
                   if (self.process) {
-                    _context7.next = 2;
+                    _context7.next = 3;
                     break;
                   }
 
+                  // Set process to stopped
+                  self.state = 'stopped';
+                  // Return
                   return _context7.abrupt('return', resolve());
 
-                case 2:
+                case 3:
+
                   // Wait for service to stop
                   self.process.on('close', function () {
                     // Set process to stopped
@@ -535,7 +544,7 @@ var Server = (function () {
                   // Terminate the process
                   self.process.kill(signal);
 
-                case 4:
+                case 5:
                 case 'end':
                   return _context7.stop();
               }
@@ -582,6 +591,21 @@ var Server = (function () {
           }, _callee8, this);
         })).catch(reject);
       });
+    }
+  }, {
+    key: 'config',
+    get: function get() {
+      return clone(this.options);
+    }
+  }, {
+    key: 'host',
+    get: function get() {
+      return this.options.bind_ip;
+    }
+  }, {
+    key: 'port',
+    get: function get() {
+      return this.options.port;
     }
   }, {
     key: 'name',
