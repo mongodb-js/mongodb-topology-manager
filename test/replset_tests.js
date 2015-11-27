@@ -2,7 +2,7 @@
 
 var co = require('co'),
   f = require('util').format,
-  Logger = require('../lib/logger'),  
+  Logger = require('../lib/logger'),
   assert = require('assert');
 
 // Polyfill Promise if none exists
@@ -20,13 +20,13 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
-        
+
         // Create new instance
         var topology = new ReplSet('mongod', [{
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname)
           }
         }, {
@@ -38,7 +38,7 @@ describe('ReplSet', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost',
@@ -66,13 +66,13 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
-        
+
         // Create new instance
         var topology = new ReplSet('mongod', [{
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname)
           }
         }, {
@@ -84,7 +84,7 @@ describe('ReplSet', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost',
@@ -122,7 +122,7 @@ describe('ReplSet', function() {
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname),
 
             // SSL server instance options
@@ -136,7 +136,7 @@ describe('ReplSet', function() {
             bind_ip: 'localhost',
             port: 31001,
             dbpath: f('%s/../db/31001', __dirname),
-            
+
             // SSL server instance options
             sslOnNormalPorts:null,
             sslPEMKeyFile: f('%s/ssl/server.pem', __dirname),
@@ -144,7 +144,7 @@ describe('ReplSet', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost',
@@ -159,7 +159,7 @@ describe('ReplSet', function() {
         }], {
           // SSL client instance options
           replSet: 'rs',
-          ssl:true, 
+          ssl:true,
           rejectUnauthorized:false
         });
 
@@ -189,13 +189,13 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
-        
+
         // Create new instance
         var topology = new ReplSet('mongod', [{
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname)
           }
         }, {
@@ -207,7 +207,7 @@ describe('ReplSet', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost',
@@ -227,10 +227,10 @@ describe('ReplSet', function() {
         yield topology.start();
 
         // Step down primary and block until we have a new primary
-        yield topology.stepDownPrimary(false, {stepDownSecs: 10});
+        yield topology.stepDownPrimary(false, {stepDownSecs: 0, force:true});
 
         // Step down primary and immediately return
-        yield topology.stepDownPrimary(true, {stepDownSecs: 10});
+        yield topology.stepDownPrimary(true, {stepDownSecs: 0, force:true});
 
         // Block waiting for a new primary to be elected
         yield topology.waitForPrimary();
@@ -250,13 +250,13 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
-        
+
         // Create new instance
         var topology = new ReplSet('mongod', [{
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname)
           }
         }, {
@@ -268,7 +268,7 @@ describe('ReplSet', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost',
@@ -322,13 +322,13 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
-        
+
         // Create new instance
         var topology = new ReplSet('mongod', [{
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname)
           }
         }, {
@@ -340,7 +340,7 @@ describe('ReplSet', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost',
@@ -392,13 +392,13 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
-        
+
         // Create new instance
         var topology = new ReplSet('mongod', [{
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname)
           }
         }, {
@@ -410,7 +410,7 @@ describe('ReplSet', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost',
@@ -465,13 +465,13 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
-        
+
         // Create new instance
         var topology = new ReplSet('mongod', [{
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname)
           }
         }, {
@@ -483,7 +483,7 @@ describe('ReplSet', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost',
@@ -538,13 +538,13 @@ describe('ReplSet', function() {
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
-        
+
         // Create new instance
         var topology = new ReplSet('mongod', [{
           // mongod process options
           options: {
             bind_ip: 'localhost',
-            port: 31000, 
+            port: 31000,
             dbpath: f('%s/../db/31000', __dirname)
           }
         }, {

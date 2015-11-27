@@ -52,7 +52,7 @@ describe('Server', function() {
 
         // Start process
         yield server.start();
-        
+
         // Stop the process
         yield server.stop();
 
@@ -82,7 +82,7 @@ describe('Server', function() {
 
         // Get current pid
         var pid1 = server.process.pid;
-        
+
         // Restart
         yield server.restart();
 
@@ -180,7 +180,7 @@ describe('Server', function() {
           sslPEMKeyFile: f('%s/ssl/server.pem', __dirname),
           sslAllowInvalidCertificates:null
         }, {
-          ssl:true, 
+          ssl:true,
           rejectUnauthorized:false
         });
 
