@@ -21,7 +21,7 @@ describe('Sharded', function() {
       co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
-        var topology = new Sharded('mongod');       
+        var topology = new Sharded('mongod');
         // Perform discovery
         var version = yield topology.discover();
         // Expect 3 integers
@@ -44,7 +44,7 @@ describe('Sharded', function() {
           mongod: 'mongod',
           mongos: 'mongos'
         });
-        
+
         // Add one shard
         yield topology.addShard([{
           options: {
@@ -56,7 +56,7 @@ describe('Sharded', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost', port: 31002, dbpath: f('%s/../db/31002', __dirname)
@@ -76,7 +76,7 @@ describe('Sharded', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost', port: 31012, dbpath: f('%s/../db/31012', __dirname)
@@ -142,7 +142,7 @@ describe('Sharded', function() {
           mongod: 'mongod',
           mongos: 'mongos'
         });
-        
+
         // Add one shard
         yield topology.addShard([{
           options: {
@@ -154,7 +154,7 @@ describe('Sharded', function() {
           }
         }, {
           // Type of node
-          arbiter: true, 
+          arbiter: true,
           // mongod process options
           options: {
             bind_ip: 'localhost', port: 31002, dbpath: f('%s/../db/31002', __dirname)
@@ -197,7 +197,7 @@ describe('Sharded', function() {
 
         // Shard db
         yield topology.enableSharding('test');
-        
+
         // Shard a collection
         yield topology.shardCollection('test', 'testcollection', {_id: 1});
 
