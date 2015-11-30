@@ -537,7 +537,7 @@ var Server = (function () {
             while (1) {
               switch (_context7.prev = _context7.next) {
                 case 0:
-                  if (self.process) {
+                  if (!(!self.process || self.state == 'stopped')) {
                     _context7.next = 3;
                     break;
                   }

@@ -356,42 +356,42 @@ var ReplSet = (function () {
 
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee3() {
-          var manager, i, ismaster;
+          var i, ismaster;
           return regeneratorRuntime.wrap(function _callee3$(_context3) {
             while (1) {
               switch (_context3.prev = _context3.next) {
                 case 0:
-                  manager = null;
-
-                  // Go over all the managers
-
                   i = 0;
 
-                case 2:
+                case 1:
                   if (!(i < self.managers.length)) {
                     _context3.next = 10;
                     break;
                   }
 
-                  _context3.next = 5;
+                  _context3.next = 4;
                   return self.managers[i].ismaster();
 
-                case 5:
+                case 4:
                   ismaster = _context3.sent;
 
-                  if (ismaster.ismaster) manager = self.managers[i];
+                  if (!ismaster.ismaster) {
+                    _context3.next = 7;
+                    break;
+                  }
+
+                  return _context3.abrupt('return', resolve(self.managers[i]));
 
                 case 7:
                   i++;
-                  _context3.next = 2;
+                  _context3.next = 1;
                   break;
 
                 case 10:
 
-                  if (!manager) reject(new Error('no primary server found in set'));
-                  resolve(manager);
+                  reject(new Error('no primary server found in set'));
 
-                case 12:
+                case 11:
                 case 'end':
                   return _context3.stop();
               }
@@ -1185,7 +1185,7 @@ var ReplSet = (function () {
       // Return the promise
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee11() {
-          var opts, server, max, config, member, primary, result, waitedForElectionCycle, ismaster;
+          var opts, server, newManagers, needWaitForPrimary, i, max, config, member, primary, result, waitedForElectionCycle, ismaster;
           return regeneratorRuntime.wrap(function _callee11$(_context11) {
             while (1) {
               switch (_context11.prev = _context11.next) {
@@ -1203,24 +1203,79 @@ var ReplSet = (function () {
                   // Create a new server instance
                   server = new Server(self.binary, opts, self.options);
 
-                  // Purge the directory
+                  // If we have an existing manager remove it
 
-                  _context11.next = 7;
+                  newManagers = [];
+
+                  // Need to wait for Primary
+
+                  needWaitForPrimary = false;
+                  // Do we already have a manager then stop it, purge it and remove it
+
+                  i = 0;
+
+                case 8:
+                  if (!(i < self.managers.length)) {
+                    _context11.next = 21;
+                    break;
+                  }
+
+                  if (!(f('%s:%s', self.managers[i].host, self.managers[i].port) == f('%s:%s', server.host, server.port))) {
+                    _context11.next = 17;
+                    break;
+                  }
+
+                  _context11.next = 12;
+                  return self.managers[i].stop();
+
+                case 12:
+                  _context11.next = 14;
+                  return self.managers[i].purge();
+
+                case 14:
+                  needWaitForPrimary = true;
+                  _context11.next = 18;
+                  break;
+
+                case 17:
+                  newManagers.push(self.managers[i]);
+
+                case 18:
+                  i++;
+                  _context11.next = 8;
+                  break;
+
+                case 21:
+
+                  // Set up the managers
+                  self.managers = newManagers;
+
+                  // Purge the directory
+                  _context11.next = 24;
                   return server.purge();
 
-                case 7:
-                  _context11.next = 9;
+                case 24:
+                  _context11.next = 26;
                   return server.start();
 
-                case 9:
+                case 26:
+                  if (!needWaitForPrimary) {
+                    _context11.next = 29;
+                    break;
+                  }
+
+                  _context11.next = 29;
+                  return self.waitForPrimary();
+
+                case 29:
                   if (!(self.configurations.length == 0)) {
-                    _context11.next = 11;
+                    _context11.next = 31;
                     break;
                   }
 
                   return _context11.abrupt('return', reject(new Error('no configurations exist yet, did you start the replicaset?')));
 
-                case 11:
+                case 31:
 
                   // Locate max id
                   max = 0;
@@ -1258,36 +1313,36 @@ var ReplSet = (function () {
                   config.version = config.version + 1;
 
                   // Reconfigure the replicaset
-                  _context11.next = 27;
+                  _context11.next = 47;
                   return self.primary();
 
-                case 27:
+                case 47:
                   primary = _context11.sent;
 
                   if (primary) {
-                    _context11.next = 30;
+                    _context11.next = 50;
                     break;
                   }
 
                   return _context11.abrupt('return', reject(new Error('no primary available')));
 
-                case 30:
-                  _context11.next = 32;
+                case 50:
+                  _context11.next = 52;
                   return primary.executeCommand('admin.$cmd', {
                     replSetReconfig: config, force: force
                   }, credentials);
 
-                case 32:
+                case 52:
                   result = _context11.sent;
 
                   if (!(result && result.ok == 0)) {
-                    _context11.next = 35;
+                    _context11.next = 55;
                     break;
                   }
 
                   return _context11.abrupt('return', reject(new Error(f('failed to execute replSetReconfig with configuration [%s]', JSON.stringify(config)))));
 
-                case 35:
+                case 55:
 
                   // Push new configuration to list
                   self.configurations.push(config);
@@ -1298,107 +1353,107 @@ var ReplSet = (function () {
                   // If we want to return immediately do so now
 
                   if (!returnImmediately) {
-                    _context11.next = 39;
+                    _context11.next = 59;
                     break;
                   }
 
                   return _context11.abrupt('return', resolve(server));
 
-                case 39:
+                case 59:
 
                   // Found a valid state
                   waitedForElectionCycle = false;
 
                   // Wait for the server to get in a stable state
 
-                case 40:
+                case 60:
                   if (!true) {
-                    _context11.next = 77;
+                    _context11.next = 97;
                     break;
                   }
 
-                  _context11.prev = 41;
-                  _context11.next = 44;
+                  _context11.prev = 61;
+                  _context11.next = 64;
                   return server.ismaster();
 
-                case 44:
+                case 64:
                   ismaster = _context11.sent;
 
                   if (!(ismaster.ismaster && ismaster.electionId && !self.electionId.equals(ismaster.electionId))) {
-                    _context11.next = 51;
+                    _context11.next = 71;
                     break;
                   }
 
-                  _context11.next = 48;
+                  _context11.next = 68;
                   return self.waitForPrimary();
 
-                case 48:
+                case 68:
                   return _context11.abrupt('return', resolve(server));
 
-                case 51:
+                case 71:
                   if (!((ismaster.secondary || ismaster.arbiterOnly) && ismaster.electionId && self.electionId.equals(ismaster.electionId))) {
-                    _context11.next = 55;
+                    _context11.next = 75;
                     break;
                   }
 
                   return _context11.abrupt('return', resolve(server));
 
-                case 55:
+                case 75:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && !waitedForElectionCycle)) {
-                    _context11.next = 61;
+                    _context11.next = 81;
                     break;
                   }
 
                   // Wait for an election cycle to have passed
                   waitedForElectionCycle = true;
-                  _context11.next = 59;
+                  _context11.next = 79;
                   return waitMS(self.electionCycleWaitMS);
 
-                case 59:
-                  _context11.next = 69;
+                case 79:
+                  _context11.next = 89;
                   break;
 
-                case 61:
+                case 81:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && waitedForElectionCycle)) {
-                    _context11.next = 67;
+                    _context11.next = 87;
                     break;
                   }
 
-                  _context11.next = 64;
+                  _context11.next = 84;
                   return self.waitForPrimary();
 
-                case 64:
+                case 84:
                   return _context11.abrupt('return', resolve(server));
 
-                case 67:
-                  _context11.next = 69;
+                case 87:
+                  _context11.next = 89;
                   return waitMS(self.retryWaitMS);
 
-                case 69:
-                  _context11.next = 75;
+                case 89:
+                  _context11.next = 95;
                   break;
 
-                case 71:
-                  _context11.prev = 71;
-                  _context11.t0 = _context11['catch'](41);
-                  _context11.next = 75;
+                case 91:
+                  _context11.prev = 91;
+                  _context11.t0 = _context11['catch'](61);
+                  _context11.next = 95;
                   return waitMS(self.retryWaitMS);
 
-                case 75:
-                  _context11.next = 40;
+                case 95:
+                  _context11.next = 60;
                   break;
 
-                case 77:
+                case 97:
 
                   // Should not reach here
                   reject(new Error(f('failed to successfully add a new member with options [%s]', JSON.stringify(node))));
 
-                case 78:
+                case 98:
                 case 'end':
                   return _context11.stop();
               }
             }
-          }, _callee11, this, [[41, 71]]);
+          }, _callee11, this, [[61, 91]]);
         })).catch(reject);
       });
     }
@@ -1476,36 +1531,36 @@ var ReplSet = (function () {
                   // Push new configuration to list
                   self.configurations.push(config);
 
-                  // Remove from the list of managers
-                  self.managers = self.managers.filter(function (x) {
-                    return x.name != node.name;
-                  });
+                  // // Remove from the list of managers
+                  // self.managers = self.managers.filter(function(x) {
+                  //   return x.name != node.name;
+                  // });
 
                   // If we want to return immediately do so now
 
                   if (!returnImmediately) {
-                    _context12.next = 18;
+                    _context12.next = 17;
                     break;
                   }
 
-                  _context12.next = 17;
+                  _context12.next = 16;
                   return node.stop();
+
+                case 16:
+                  return _context12.abrupt('return', resolve());
 
                 case 17:
-                  return _context12.abrupt('return', resolve());
-
-                case 18:
-                  _context12.next = 20;
+                  _context12.next = 19;
                   return node.stop();
 
-                case 20:
-                  _context12.next = 22;
+                case 19:
+                  _context12.next = 21;
                   return self.waitForPrimary();
 
-                case 22:
+                case 21:
                   return _context12.abrupt('return', resolve());
 
-                case 23:
+                case 22:
                 case 'end':
                   return _context12.stop();
               }
@@ -1705,13 +1760,18 @@ var ReplSet = (function () {
                   return self.purge();
 
                 case 4:
-                  _context15.next = 6;
+
+                  // Clean out the configuration
+                  self.configurations = [];
+
+                  // Restart the servers
+                  _context15.next = 7;
                   return self.start();
 
-                case 6:
+                case 7:
                   resolve();
 
-                case 7:
+                case 8:
                 case 'end':
                   return _context15.stop();
               }
