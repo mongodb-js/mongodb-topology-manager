@@ -331,8 +331,13 @@ var Server = (function () {
 
                   commandOptions = [];
 
-                  // Go over all the options
+                  // Do we have a 2.2 server, then we don't support setParameter
 
+                  if (version[0] == 2 && version[1] == 2) {
+                    delete options['setParameter'];
+                  }
+
+                  // Go over all the options
                   for (name in options) {
                     if (options[name] == null) {
                       commandOptions.push(f('--%s', name));
@@ -402,7 +407,7 @@ var Server = (function () {
                     self.state = 'stopped';
                   });
 
-                case 21:
+                case 22:
                 case 'end':
                   return _context4.stop();
               }
