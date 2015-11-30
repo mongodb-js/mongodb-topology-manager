@@ -287,7 +287,7 @@ var Server = (function () {
 
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee4() {
-          var result, version, errors, options, commandOptions, name, commandLine, stdout, stderr;
+          var result, version, errors, options, commandOptions, name, i, o, commandLine, stdout, stderr;
           return regeneratorRuntime.wrap(function _callee4$(_context4) {
             while (1) {
               switch (_context4.prev = _context4.next) {
@@ -336,6 +336,17 @@ var Server = (function () {
                   for (name in options) {
                     if (options[name] == null) {
                       commandOptions.push(f('--%s', name));
+                    } else if (Array.isArray(options[name])) {
+                      // We have an array of a specific option f.ex --setParameter
+                      for (i = 0; i < options[name].length; i++) {
+                        o = options[name][i];
+
+                        if (o == null) {
+                          commandOptions.push(f('--%s', name));
+                        } else {
+                          commandOptions.push(f('--%s=%s', name, options[name][i]));
+                        }
+                      }
                     } else {
                       commandOptions.push(f('--%s=%s', name, options[name]));
                     }
