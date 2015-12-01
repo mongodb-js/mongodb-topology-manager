@@ -359,6 +359,8 @@ var Server = (function () {
 
                   // Command line
                   commandLine = f('%s %s', self.binary, commandOptions.join(' '));
+                  // console.log("----------------------------------------------------------------------------")
+                  // console.log(commandLine)
 
                   if (self.logger.isInfo()) {
                     self.logger.info(f('started mongod with [%s]', commandLine));

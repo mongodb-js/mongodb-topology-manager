@@ -321,9 +321,13 @@ var ReplSet = (function () {
 
                 case 42:
                   _context2.next = 44;
-                  return self.managers[0].ismaster();
+                  return self.waitForPrimary();
 
                 case 44:
+                  _context2.next = 46;
+                  return self.managers[0].ismaster();
+
+                case 46:
                   ismaster = _context2.sent;
 
                   // Save the current election Id if it exists
@@ -333,7 +337,7 @@ var ReplSet = (function () {
                   // We have a stable replicaset
                   resolve();
 
-                case 48:
+                case 50:
                 case 'end':
                   return _context2.stop();
               }
