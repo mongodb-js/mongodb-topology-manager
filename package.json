@@ -1,6 +1,6 @@
 {
   "name": "mongodb-topology-manager",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Localhost MongoDB Topology Management API",
   "main": "index.js",
   "directories": {

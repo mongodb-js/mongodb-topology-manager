@@ -60,8 +60,19 @@ var Server = (function () {
               switch (_context.prev = _context.next) {
                 case 0:
                   proc = spawn(self.binary, ['--version']);
-                  // Variables receiving data
 
+                  // Do we have a valid proc
+
+                  if (!(!proc || !proc.stdout || !proc.stderr)) {
+                    _context.next = 3;
+                    break;
+                  }
+
+                  return _context.abrupt('return', reject(new Error(f('failed to start [%s --version]', self.binary))));
+
+                case 3:
+
+                  // Variables receiving data
                   stdout = '';
                   stderr = '';
                   // Get the stdout
@@ -94,7 +105,7 @@ var Server = (function () {
                     });
                   });
 
-                case 7:
+                case 9:
                 case 'end':
                   return _context.stop();
               }
@@ -377,6 +388,7 @@ var Server = (function () {
 
                   self.process.stdout.on('data', function (data) {
                     stdout += data.toString();
+                    // console.log(data.toString())
 
                     //
                     // Only emit event at start

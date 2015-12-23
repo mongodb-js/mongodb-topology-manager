@@ -846,7 +846,7 @@ var ReplSet = (function () {
     /**
      * Get the current replicaset configuration
      * @method
-     * @param {object} manager The server manager that we wish to remove from the set.
+     * @param {object} manager The server manager that we wish to use to get the current configuration.
      * @param {object} [credentials] Credentials needed to perform an admin authenticated command.
      * @returns {Promise}
      */
@@ -1126,7 +1126,7 @@ var ReplSet = (function () {
     }
 
     /**
-     * Adds a new member to the replicaset
+     * Get seed list node configuration
      * @method
      * @param {object} node server manager we want node configuration from
      * @returns {Promise}
@@ -1535,11 +1535,6 @@ var ReplSet = (function () {
                   // Push new configuration to list
                   self.configurations.push(config);
 
-                  // // Remove from the list of managers
-                  // self.managers = self.managers.filter(function(x) {
-                  //   return x.name != node.name;
-                  // });
-
                   // If we want to return immediately do so now
 
                   if (!returnImmediately) {
@@ -1706,8 +1701,9 @@ var ReplSet = (function () {
     }
   }, {
     key: 'stop',
-    value: function stop() {
+    value: function stop(signal) {
       var self = this;
+      signal = typeof signal == 'number' ? signals[signal] : signals[9];
 
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee14() {
@@ -1725,7 +1721,7 @@ var ReplSet = (function () {
                   }
 
                   _context14.next = 4;
-                  return self.managers[i].stop();
+                  return self.managers[i].stop(signal);
 
                 case 4:
                   i++;
@@ -1747,8 +1743,10 @@ var ReplSet = (function () {
     }
   }, {
     key: 'restart',
-    value: function restart() {
+    value: function restart(signal, options) {
       var self = this;
+      signal = typeof signal == 'number' ? signals[signal] : signals[9];
+      options = options || {};
 
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee15() {
@@ -1757,31 +1755,43 @@ var ReplSet = (function () {
               switch (_context15.prev = _context15.next) {
                 case 0:
                   _context15.next = 2;
-                  return self.stop();
+                  return self.stop(signal);
 
                 case 2:
-                  _context15.next = 4;
+                  if (!(typeof options.waitMS == 'number')) {
+                    _context15.next = 5;
+                    break;
+                  }
+
+                  _context15.next = 5;
+                  return waitMS(options.waitMS);
+
+                case 5:
+                  _context15.next = 7;
                   return self.purge();
 
-                case 4:
+                case 7:
 
                   // Clean out the configuration
                   self.configurations = [];
 
                   // Restart the servers
-                  _context15.next = 7;
+                  _context15.next = 10;
                   return self.start();
 
-                case 7:
+                case 10:
                   resolve();
 
-                case 8:
+                case 11:
                 case 'end':
                   return _context15.stop();
               }
             }
           }, _callee15, this);
-        })).catch(reject);
+        })).catch(function (e) {
+          console.log(e.stack);
+          reject(e);
+        });
       });
     }
   }, {
@@ -1871,3 +1881,33 @@ var generateConfiguration = function generateConfiguration(_id, version, nodes, 
 };
 
 module.exports = ReplSet;
+
+// SIGHUP      1       Term    Hangup detected on controlling terminal
+//                             or death of controlling process
+// SIGINT      2       Term    Interrupt from keyboard
+// SIGQUIT       3       Core    Quit from keyboard
+// SIGILL      4       Core    Illegal Instruction
+// SIGABRT       6       Core    Abort signal from abort(3)
+// SIGFPE      8       Core    Floating point exception
+// SIGKILL       9       Term    Kill signal
+// SIGSEGV      11       Core    Invalid memory reference
+// SIGPIPE      13       Term    Broken pipe: write to pipe with no readers
+// SIGALRM      14       Term    Timer signal from alarm(2)
+// SIGTERM      15       Term    Termination signal
+// Signal map
+var signals = {
+  1: 'SIGHUP',
+  2: 'SIGINT',
+  3: 'SIGQUIT',
+  4: 'SIGABRT',
+  6: 'SIGABRT',
+  8: 'SIGFPE',
+  9: 'SIGKILL',
+  11: 'SIGSEGV',
+  13: 'SIGPIPE',
+  14: 'SIGALRM',
+  15: 'SIGTERM',
+  17: 'SIGSTOP',
+  19: 'SIGSTOP',
+  23: 'SIGSTOP'
+};
