@@ -1,6 +1,6 @@
 "use strict";
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -37,7 +37,7 @@ var reportError = function reportError(self, reject) {
   };
 };
 
-var Sharded = (function () {
+var Sharded = function () {
   function Sharded(options) {
     _classCallCheck(this, Sharded);
 
@@ -250,6 +250,7 @@ var Sharded = (function () {
                   // Get a proxy
                   proxy = self.proxies[0];
 
+
                   if (self.logger.isInfo()) {
                     self.logger.info(f('enable sharding for db %s', db));
                   }
@@ -262,6 +263,7 @@ var Sharded = (function () {
 
                 case 4:
                   result = _context5.sent;
+
 
                   if (self.logger.isInfo()) {
                     self.logger.info(f('successfully enabled sharding for db %s with result [%s]', db, JSON.stringify(result)));
@@ -318,6 +320,7 @@ var Sharded = (function () {
 
                 case 8:
                   result = _context6.sent;
+
 
                   if (self.logger.isInfo()) {
                     self.logger.info(f('successfully sharded collection for %s.%s with command [%s] and result [%s]', db, collection, JSON.stringify(command), JSON.stringify(result)));
@@ -447,6 +450,7 @@ var Sharded = (function () {
 
                 case 33:
                   result = _context7.sent;
+
 
                   if (self.logger.isInfo()) {
                     self.logger.info(f('add shard at %s with result [%s]', self.shards[i].shardUrl(), JSON.stringify(result)));
@@ -694,6 +698,6 @@ var Sharded = (function () {
   }]);
 
   return Sharded;
-})();
+}();
 
 module.exports = Sharded;

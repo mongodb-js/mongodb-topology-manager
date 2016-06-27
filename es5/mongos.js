@@ -1,6 +1,6 @@
 "use strict";
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -12,13 +12,15 @@ var co = require('co'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 
+var Promise = require('es6-promise').Promise;
+
 var clone = function clone(o) {
   var obj = {};for (var name in o) {
     obj[name] = o[name];
   }return obj;
 };
 
-var Mongos = (function () {
+var Mongos = function () {
   function Mongos(binary, options, clientOptions) {
     _classCallCheck(this, Mongos);
 
@@ -163,7 +165,9 @@ var Mongos = (function () {
 
                   // Create an instance
 
+
                   s = new CoreServer(opt);
+
 
                   s.on('error', function (err) {
                     if (options.ignoreError) return resolve({ ok: 1 });
@@ -263,6 +267,7 @@ var Mongos = (function () {
 
                   // Command line
                   commandLine = f('%s %s', self.binary, commandOptions.join(' '));
+
 
                   if (self.logger.isInfo()) {
                     self.logger.info(f('start mongos server [%s]', commandLine));
@@ -532,7 +537,7 @@ var Mongos = (function () {
   }]);
 
   return Mongos;
-})();
+}();
 
 module.exports = Mongos;
 

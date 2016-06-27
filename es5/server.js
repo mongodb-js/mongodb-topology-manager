@@ -1,8 +1,10 @@
 "use strict";
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Promise = require('es6-promise').Promise;
 
 var co = require('co'),
     f = require('util').format,
@@ -18,7 +20,7 @@ var clone = function clone(o) {
   }return obj;
 };
 
-var Server = (function () {
+var Server = function () {
   function Server(binary, options, clientOptions) {
     _classCallCheck(this, Server);
 
@@ -245,7 +247,9 @@ var Server = (function () {
 
                   // Create an instance
 
+
                   s = new CoreServer(opt);
+
 
                   s.on('error', function (err) {
                     if (options.ignoreError) return resolve({ ok: 1 });
@@ -356,6 +360,7 @@ var Server = (function () {
                       // We have an array of a specific option f.ex --setParameter
                       for (i = 0; i < options[name].length; i++) {
                         o = options[name][i];
+
 
                         if (o == null) {
                           commandOptions.push(f('--%s', name));
@@ -544,7 +549,7 @@ var Server = (function () {
     value: function stop(signal) {
       var self = this;
       signal = typeof signal == 'number' ? signals[signal] : signals['15'];
-
+      // console.log("----------------------- 0")
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee7() {
           return regeneratorRuntime.wrap(function _callee7$(_context7) {
@@ -556,21 +561,27 @@ var Server = (function () {
                     break;
                   }
 
+                  // console.log("----------------------- 0:1")
                   // Set process to stopped
                   self.state = 'stopped';
+                  // console.log("----------------------- 0:2")
                   // Return
                   return _context7.abrupt('return', resolve());
 
                 case 3:
 
+                  // console.log("----------------------- 2")
                   // Wait for service to stop
                   self.process.on('close', function () {
+                    // console.log("----------------------- 1:1")
                     // Set process to stopped
                     self.state = 'stopped';
+                    // console.log("----------------------- 1:2")
                     // Return
                     resolve();
                   });
 
+                  // console.log("----------------------- 3")
                   // Terminate the process
                   self.process.kill(signal);
 
@@ -645,7 +656,7 @@ var Server = (function () {
   }]);
 
   return Server;
-})();
+}();
 
 module.exports = Server;
 

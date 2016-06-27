@@ -1,6 +1,6 @@
 "use strict";
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -12,6 +12,8 @@ var co = require('co'),
     Server = require('./server'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
+
+var Promise = require('es6-promise').Promise;
 
 var clone = function clone(o) {
   var obj = {};for (var name in o) {
@@ -27,7 +29,7 @@ var waitMS = function waitMS(ms) {
   });
 };
 
-var ReplSet = (function () {
+var ReplSet = function () {
   function ReplSet(binary, nodes, options) {
     _classCallCheck(this, ReplSet);
 
@@ -206,6 +208,7 @@ var ReplSet = (function () {
                   // Time to configure the servers by generating the
                   config = generateConfiguration(self.replSet, self.version, self.nodes, self.configSettings);
 
+
                   if (self.logger.isInfo()) {
                     self.logger.info(f('initialize replicaset with config %s', JSON.stringify(config)));
                   }
@@ -286,6 +289,7 @@ var ReplSet = (function () {
                   // Sum up expected servers
                   for (i = 0; i < result.members.length; i++) {
                     member = result.members[i];
+
 
                     if (member.health == 1) {
                       if (member.state == 2) {
@@ -1532,6 +1536,7 @@ var ReplSet = (function () {
                 case 11:
                   result = _context12.sent;
 
+
                   // Push new configuration to list
                   self.configurations.push(config);
 
@@ -1838,11 +1843,12 @@ var ReplSet = (function () {
   }]);
 
   return ReplSet;
-})();
+}();
 
 /*
  * Generate the replicaset configuration file
  */
+
 
 var generateConfiguration = function generateConfiguration(_id, version, nodes, settings) {
   var members = [];
