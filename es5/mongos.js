@@ -268,7 +268,7 @@ var Mongos = (function () {
                     self.logger.info(f('start mongos server [%s]', commandLine));
                   }
 
-                  // console.log("---------------- start server")
+                  // console.log("---------------- start mongos")
                   // console.dir(commandLine)
 
                   // Spawn a mongos process

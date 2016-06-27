@@ -543,7 +543,7 @@ var Server = (function () {
     key: 'stop',
     value: function stop(signal) {
       var self = this;
-      signal = typeof signal == 'number' ? signal : signals.SIGTERM;
+      signal = typeof signal == 'number' ? signals[signal] : signals['15'];
 
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee7() {
