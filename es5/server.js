@@ -1,10 +1,13 @@
 "use strict";
 
+// var Promise = require('es6-promise').Promise;
+// require('es6-promise').polyfill();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Promise = require('es6-promise').Promise;
+var Promise = require("bluebird");
 
 var co = require('co'),
     f = require('util').format,
@@ -50,7 +53,7 @@ var Server = function () {
   }
 
   _createClass(Server, [{
-    key: 'discover',
+    key: "discover",
     value: function discover() {
       var self = this;
 
@@ -70,7 +73,7 @@ var Server = function () {
                     break;
                   }
 
-                  return _context.abrupt('return', reject(new Error(f('failed to start [%s --version]', self.binary))));
+                  return _context.abrupt("return", reject(new Error(f('failed to start [%s --version]', self.binary))));
 
                 case 3:
 
@@ -108,7 +111,7 @@ var Server = function () {
                   });
 
                 case 9:
-                case 'end':
+                case "end":
                   return _context.stop();
               }
             }
@@ -117,7 +120,7 @@ var Server = function () {
       });
     }
   }, {
-    key: 'instance',
+    key: "instance",
     value: function instance(credentials, options) {
       var self = this;
       options = options || {};
@@ -178,7 +181,7 @@ var Server = function () {
                   s.connect();
 
                 case 14:
-                case 'end':
+                case "end":
                   return _context2.stop();
               }
             }
@@ -187,7 +190,7 @@ var Server = function () {
       });
     }
   }, {
-    key: 'executeCommand',
+    key: "executeCommand",
     value: function executeCommand(ns, command, credentials, options) {
       var self = this;
       options = options || {};
@@ -284,7 +287,7 @@ var Server = function () {
                   s.connect();
 
                 case 15:
-                case 'end':
+                case "end":
                   return _context3.stop();
               }
             }
@@ -296,7 +299,7 @@ var Server = function () {
       });
     }
   }, {
-    key: 'start',
+    key: "start",
     value: function start() {
       var self = this;
 
@@ -331,7 +334,7 @@ var Server = function () {
                     break;
                   }
 
-                  return _context4.abrupt('return', reject(errors));
+                  return _context4.abrupt("return", reject(errors));
 
                 case 8:
 
@@ -427,7 +430,7 @@ var Server = function () {
                   });
 
                 case 22:
-                case 'end':
+                case "end":
                   return _context4.stop();
               }
             }
@@ -441,7 +444,7 @@ var Server = function () {
      */
 
   }, {
-    key: 'ismaster',
+    key: "ismaster",
     value: function ismaster() {
       var self = this;
 
@@ -498,7 +501,7 @@ var Server = function () {
                   s.connect();
 
                 case 14:
-                case 'end':
+                case "end":
                   return _context5.stop();
               }
             }
@@ -512,7 +515,7 @@ var Server = function () {
      */
 
   }, {
-    key: 'purge',
+    key: "purge",
     value: function purge() {
       var self = this;
 
@@ -536,7 +539,7 @@ var Server = function () {
                   resolve();
 
                 case 3:
-                case 'end':
+                case "end":
                   return _context6.stop();
               }
             }
@@ -545,7 +548,7 @@ var Server = function () {
       });
     }
   }, {
-    key: 'stop',
+    key: "stop",
     value: function stop(signal) {
       var self = this;
       signal = typeof signal == 'number' ? signals[signal] : signals['15'];
@@ -566,7 +569,7 @@ var Server = function () {
                   self.state = 'stopped';
                   // console.log("----------------------- 0:2")
                   // Return
-                  return _context7.abrupt('return', resolve());
+                  return _context7.abrupt("return", resolve());
 
                 case 3:
 
@@ -586,7 +589,7 @@ var Server = function () {
                   self.process.kill(signal);
 
                 case 5:
-                case 'end':
+                case "end":
                   return _context7.stop();
               }
             }
@@ -595,7 +598,7 @@ var Server = function () {
       });
     }
   }, {
-    key: 'restart',
+    key: "restart",
     value: function restart(purge) {
       var self = this;
 
@@ -625,7 +628,7 @@ var Server = function () {
                   resolve();
 
                 case 8:
-                case 'end':
+                case "end":
                   return _context8.stop();
               }
             }
@@ -634,22 +637,22 @@ var Server = function () {
       });
     }
   }, {
-    key: 'config',
+    key: "config",
     get: function get() {
       return clone(this.options);
     }
   }, {
-    key: 'host',
+    key: "host",
     get: function get() {
       return this.options.bind_ip;
     }
   }, {
-    key: 'port',
+    key: "port",
     get: function get() {
       return this.options.port;
     }
   }, {
-    key: 'name',
+    key: "name",
     get: function get() {
       return f('%s:%s', this.options.bind_ip, this.options.port);
     }

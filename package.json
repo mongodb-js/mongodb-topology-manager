@@ -1,6 +1,6 @@
 {
   "name": "mongodb-topology-manager",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Localhost MongoDB Topology Management API",
   "main": "index.js",
   "directories": {
@@ -28,6 +28,7 @@
   "dependencies": {
     "babel-core": "^6.10.4",
     "babel-polyfill": "^6.9.1",
+    "bluebird": "^3.4.1",
     "co": "^4.6.0",
     "es6-promise": "^3.2.1",
     "kerberos": "0.0.17",

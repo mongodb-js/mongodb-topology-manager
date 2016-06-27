@@ -12,7 +12,7 @@ var co = require('co'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 
-var Promise = require('es6-promise').Promise;
+var Promise = require("bluebird");
 
 var clone = function clone(o) {
   var obj = {};for (var name in o) {
