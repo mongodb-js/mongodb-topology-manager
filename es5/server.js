@@ -423,7 +423,7 @@ var Server = function () {
                   // Process terminated
                   self.process.on('close', function (code) {
                     if (self.state == 'stopped' && stdout == '' || code != 0) {
-                      return reject(new Error(f('failed to start mongod with options %s', commandOptions)));
+                      return reject(new Error(f('failed to start mongod with options %s\n%s', commandOptions, stdout)));
                     }
 
                     self.state = 'stopped';
@@ -491,7 +491,7 @@ var Server = function () {
                       // Destroy the connection
                       _server.destroy();
                       // Return an error
-                      if (err) return callback(err);
+                      if (err) return reject(err);
                       // Return the ismaster command
                       resolve(r.result);
                     });
@@ -552,7 +552,6 @@ var Server = function () {
     value: function stop(signal) {
       var self = this;
       signal = typeof signal == 'number' ? signals[signal] : signals['15'];
-      // console.log("----------------------- 0")
       return new Promise(function (resolve, reject) {
         co(regeneratorRuntime.mark(function _callee7() {
           return regeneratorRuntime.wrap(function _callee7$(_context7) {
@@ -564,27 +563,21 @@ var Server = function () {
                     break;
                   }
 
-                  // console.log("----------------------- 0:1")
                   // Set process to stopped
                   self.state = 'stopped';
-                  // console.log("----------------------- 0:2")
                   // Return
                   return _context7.abrupt("return", resolve());
 
                 case 3:
 
-                  // console.log("----------------------- 2")
                   // Wait for service to stop
                   self.process.on('close', function () {
-                    // console.log("----------------------- 1:1")
                     // Set process to stopped
                     self.state = 'stopped';
-                    // console.log("----------------------- 1:2")
                     // Return
                     resolve();
                   });
 
-                  // console.log("----------------------- 3")
                   // Terminate the process
                   self.process.kill(signal);
 
