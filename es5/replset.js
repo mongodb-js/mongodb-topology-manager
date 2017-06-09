@@ -14,7 +14,7 @@ var co = require('co'),
     rimraf = require('rimraf'),
     Logger = require('./logger'),
     Server = require('./server'),
-    EventEmitter = require('events'),
+    EventEmitter = require('events').EventEmitter,
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 

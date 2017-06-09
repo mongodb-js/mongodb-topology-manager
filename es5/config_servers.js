@@ -13,7 +13,7 @@ var co = require('co'),
     mkdirp = require('mkdirp'),
     rimraf = require('rimraf'),
     Server = require('./server'),
-    EventEmitter = require('events'),
+    EventEmitter = require('events').EventEmitter,
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 
