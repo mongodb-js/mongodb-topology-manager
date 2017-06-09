@@ -4,6 +4,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var co = require('co'),
     f = require('util').format,
     mkdirp = require('mkdirp'),
@@ -11,6 +15,7 @@ var co = require('co'),
     Server = require('./server'),
     Logger = require('./logger'),
     ReplSet = require('./replset'),
+    EventEmitter = require('events'),
     ConfigServers = require('./config_servers'),
     Mongos = require('./mongos'),
     CoreServer = require('mongodb-core').Server,
@@ -39,22 +44,34 @@ var reportError = function reportError(self, reject) {
   };
 };
 
-var Sharded = function () {
+var Sharded = function (_EventEmitter) {
+  _inherits(Sharded, _EventEmitter);
+
   function Sharded(options) {
     _classCallCheck(this, Sharded);
 
+    var _this = _possibleConstructorReturn(this, (Sharded.__proto__ || Object.getPrototypeOf(Sharded)).call(this));
+
     options = options || {};
     // Unpack default runtime information
-    this.mongod = options.mongod || 'mongod';
-    this.mongos = options.mongos || 'mongos';
+    _this.mongod = options.mongod || 'mongod';
+    _this.mongos = options.mongos || 'mongos';
 
     // Create logger instance
-    this.logger = Logger('Sharded', options);
+    _this.logger = Logger('Sharded', options);
 
     // All pieces of the topology
-    this.shards = [];
-    this.configurationServers = null;
-    this.proxies = [];
+    _this.shards = [];
+    _this.configurationServers = null;
+    _this.proxies = [];
+
+    // Keep all options
+    _this.topologyElements = {
+      shards: [],
+      configurations: [],
+      proxies: []
+    };
+    return _this;
   }
 
   _createClass(Sharded, [{
@@ -90,13 +107,13 @@ var Sharded = function () {
                   // Process terminated
                   proc.on('close', function (code) {
                     // Perform version match
-                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/);
+                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/
 
                     // Check if we have ssl
-                    var sslMatch = stdout.match(/ssl/i);
+                    );var sslMatch = stdout.match(/ssl/i
 
                     // Resolve the server version
-                    resolve({
+                    );resolve({
                       version: versionMatch.toString().split('.').map(function (x) {
                         return parseInt(x, 10);
                       }),
@@ -128,12 +145,19 @@ var Sharded = function () {
                   options = options || {};
                   // Create a shard
                   shard = new ReplSet(self.mongod, nodes, options);
+                  // Add listener to the state and remit
+
+                  shard.on('state', function (state) {
+                    self.emit('state', state);
+                  });
                   // Add shard to list of shards
-
                   self.shards.push(shard);
-                  resolve();
+                  // Save the options
+                  self.topologyElements.shards.push({
+                    node: nodes, options: options
+                  }), resolve();
 
-                case 4:
+                case 5:
                 case 'end':
                   return _context2.stop();
               }
@@ -185,15 +209,27 @@ var Sharded = function () {
                   // not a set of configuration server
                   if (version[0] >= 4 || version[0] == 3 && version[1] >= 2) {
                     self.configurationServers = new ReplSet(self.mongod, nodes, options);
+                    // Tag options with is replicaset
+                    options.isReplicaset = true;
                   } else {
                     self.configurationServers = new ConfigServers(self.mongod, nodes.map(function (x) {
                       return x.options;
                     }), options);
+                    // Tag options with is not a replicaset
+                    options.isReplicaset = false;
                   }
 
-                  resolve();
+                  // Add listener to the state and remit
+                  self.configurationServers.on('state', function (state) {
+                    self.emit('state', state);
+                  });
 
-                case 10:
+                  // Save the options
+                  self.topologyElements.configurations.push({
+                    node: nodes, options: options
+                  }), resolve();
+
+                case 11:
                 case 'end':
                   return _context3.stop();
               }
@@ -219,16 +255,44 @@ var Sharded = function () {
                   // Clone the options
                   options = clone(options);
 
+                  // Is the proxy connecting to a replicaset
+
+                  if (!(self.topologyElements.configurations.length == 0)) {
+                    _context4.next = 4;
+                    break;
+                  }
+
+                  throw new Error('A configuration server topology must be specified before adding proxies');
+
+                case 4:
+
+                  // Get the configuration setup
+                  if (self.topologyElements.configurations[0].options.isReplicaset) {
+                    nodes = nodes.map(function (x) {
+                      // x.replSet = self.topologyElements.configurations[0].options.replSet;
+                      x.configdb = f('%s/%s', self.topologyElements.configurations[0].options.replSet, x.configdb);
+                      return x;
+                    });
+                  }
+
                   // For each node create a proxy
                   for (i = 0; i < nodes.length; i++) {
                     proxy = new Mongos(self.mongos, nodes[i], options);
+                    // Add listener to the state and remit
 
+                    proxy.on('state', function (state) {
+                      self.emit('state', state);
+                    });
+                    // Add proxy to list
                     self.proxies.push(proxy);
                   }
 
-                  resolve();
+                  // Save the options
+                  self.topologyElements.proxies.push({
+                    node: nodes, options: options
+                  }), resolve();
 
-                case 4:
+                case 7:
                 case 'end':
                   return _context4.stop();
               }
@@ -304,10 +368,9 @@ var Sharded = function () {
 
                   command = {
                     shardCollection: f('%s.%s', db, collection), key: shardKey
+
+                    // Unique shard key
                   };
-
-                  // Unique shard key
-
                   if (options.unique) {
                     command.unique = true;
                   }
@@ -700,6 +763,6 @@ var Sharded = function () {
   }]);
 
   return Sharded;
-}();
+}(EventEmitter);
 
 module.exports = Sharded;

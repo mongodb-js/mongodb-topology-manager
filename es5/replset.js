@@ -4,12 +4,17 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var co = require('co'),
     f = require('util').format,
     mkdirp = require('mkdirp'),
     rimraf = require('rimraf'),
     Logger = require('./logger'),
     Server = require('./server'),
+    EventEmitter = require('events'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 
@@ -29,28 +34,32 @@ var waitMS = function waitMS(ms) {
   });
 };
 
-var ReplSet = function () {
+var ReplSet = function (_EventEmitter) {
+  _inherits(ReplSet, _EventEmitter);
+
   function ReplSet(binary, nodes, options) {
     _classCallCheck(this, ReplSet);
 
+    var _this = _possibleConstructorReturn(this, (ReplSet.__proto__ || Object.getPrototypeOf(ReplSet)).call(this));
+
     options = options || {};
     // Save the default passed in parameters
-    this.nodes = nodes;
-    this.options = clone(options);
+    _this.nodes = nodes;
+    _this.options = clone(options);
 
     // Create logger instance
-    this.logger = Logger('ReplSet', options);
+    _this.logger = Logger('ReplSet', options);
 
     // Did we specify special settings for the configuration JSON used
     // to set up the replicaset (delete it from the internal options after
     // transferring it to a new variable)
-    if (this.options.configSettings) {
-      this.configSettings = this.options.configSettings;
-      delete this.options['configSettings'];
+    if (_this.options.configSettings) {
+      _this.configSettings = _this.options.configSettings;
+      delete _this.options['configSettings'];
     }
 
     // Ensure we have a list of nodes
-    if (!Array.isArray(this.nodes) || this.nodes.length == 0) {
+    if (!Array.isArray(_this.nodes) || _this.nodes.length == 0) {
       throw new Error('a list of nodes must be passed in');
     }
 
@@ -58,34 +67,34 @@ var ReplSet = function () {
     if (!options.replSet) throw new Error('replSet must be set');
 
     // Server state
-    this.state = 'stopped';
+    _this.state = 'stopped';
 
     // Unpack default runtime information
-    this.binary = binary || 'mongod';
+    _this.binary = binary || 'mongod';
 
     // Wait times
-    this.electionCycleWaitMS = typeof this.options.electionCycleWaitMS == 'number' ? this.options.electionCycleWaitMS : 31000;
-    this.retryWaitMS = typeof this.options.retryWaitMS == 'number' ? this.options.retryWaitMS : 5000;
+    _this.electionCycleWaitMS = typeof _this.options.electionCycleWaitMS == 'number' ? _this.options.electionCycleWaitMS : 31000;
+    _this.retryWaitMS = typeof _this.options.retryWaitMS == 'number' ? _this.options.retryWaitMS : 5000;
 
     // Remove the values from the options
-    delete this.options['electionCycleWaitMS'];
-    delete this.options['retryWaitMS'];
+    delete _this.options['electionCycleWaitMS'];
+    delete _this.options['retryWaitMS'];
 
     // Self reference
-    var self = this;
+    var self = _this;
 
     // Basic config settings for replicaset
-    this.version = 1;
-    this.replSet = options.replSet;
+    _this.version = 1;
+    _this.replSet = options.replSet;
 
     // Contains all the configurations
-    this.configurations = [];
+    _this.configurations = [];
 
     // Get the current electionId
-    this.electionId = null;
+    _this.electionId = null;
 
     // Create server managers for each node
-    this.managers = this.nodes.map(function (x) {
+    _this.managers = _this.nodes.map(function (x) {
       var opts = clone(x.options);
       delete opts['logpath'];
 
@@ -94,10 +103,14 @@ var ReplSet = function () {
 
       // Set server instance
       var server = new Server(self.binary, opts, options);
+      server.on('state', function (state) {
+        self.emit('state', state);
+      });
 
       // Create manager
       return server;
     });
+    return _this;
   }
 
   _createClass(ReplSet, [{
@@ -133,12 +146,12 @@ var ReplSet = function () {
                   // Process terminated
                   proc.on('close', function (code) {
                     // Perform version match
-                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/);
+                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/
 
                     // Check if we have ssl
-                    var sslMatch = stdout.match(/ssl/i);
+                    );var sslMatch = stdout.match(/ssl/i
                     // Final result
-                    var result = {
+                    );var result = {
                       version: versionMatch.toString().split('.').map(function (x) {
                         return parseInt(x, 10);
                       }),
@@ -182,28 +195,35 @@ var ReplSet = function () {
                   return _context2.abrupt('return', resolve());
 
                 case 2:
-                  _context2.next = 4;
+
+                  // Emit start event
+                  self.emit('state', {
+                    event: 'start', topology: 'replSet', nodes: self.nodes, options: self.options
+                  });
+
+                  // Get the version information
+                  _context2.next = 5;
                   return self.discover();
 
-                case 4:
+                case 5:
                   result = _context2.sent;
                   i = 0;
 
-                case 6:
+                case 7:
                   if (!(i < self.managers.length)) {
-                    _context2.next = 12;
+                    _context2.next = 13;
                     break;
                   }
 
-                  _context2.next = 9;
+                  _context2.next = 10;
                   return self.managers[i].start();
 
-                case 9:
+                case 10:
                   i++;
-                  _context2.next = 6;
+                  _context2.next = 7;
                   break;
 
-                case 12:
+                case 13:
 
                   // Time to configure the servers by generating the
                   config = generateConfiguration(self.replSet, self.version, self.nodes, self.configSettings);
@@ -218,22 +238,22 @@ var ReplSet = function () {
 
                   // Pick the first manager and execute replicaset configuration
 
-                  _context2.next = 17;
+                  _context2.next = 18;
                   return self.managers[0].executeCommand('admin.$cmd', {
                     replSetInitiate: config
                   }, null, { ignoreError: ignoreError });
 
-                case 17:
+                case 18:
                   result = _context2.sent;
 
                   if (!(result.ok == 0)) {
-                    _context2.next = 20;
+                    _context2.next = 21;
                     break;
                   }
 
                   return _context2.abrupt('return', reject(new Error(f('failed to initialize replicaset with config %s', JSON.stringify(config)))));
 
-                case 20:
+                case 21:
 
                   // Push configuration to the history
                   self.configurations.push(config);
@@ -244,47 +264,50 @@ var ReplSet = function () {
 
                   self.nodes.forEach(function (x) {
                     if (x.arbiter) numberOfArbiters = numberOfArbiters + 1;
-                  });
+                  }
 
                   // Now monitor until we have all the servers in a healthy state
+                  );
 
-                case 23:
+                case 24:
                   if (!true) {
-                    _context2.next = 42;
+                    _context2.next = 44;
                     break;
                   }
 
-                  _context2.next = 26;
+                  _context2.next = 27;
                   return waitMS(1000);
 
-                case 26:
+                case 27:
+                  // console.log("================= start 6:1")
 
                   // Monitoring state
                   state = {
                     primaries: 0,
                     secondaries: 0,
                     arbiters: 0
+
+                    // Get the replicaset status
                   };
-
-                  // Get the replicaset status
-
-                  _context2.prev = 27;
-                  _context2.next = 30;
+                  _context2.prev = 28;
+                  _context2.next = 31;
                   return self.managers[0].executeCommand('admin.$cmd', {
                     replSetGetStatus: true
                   });
 
-                case 30:
+                case 31:
                   result = _context2.sent;
-                  _context2.next = 36;
+                  _context2.next = 38;
                   break;
 
-                case 33:
-                  _context2.prev = 33;
-                  _context2.t0 = _context2['catch'](27);
-                  return _context2.abrupt('continue', 23);
+                case 34:
+                  _context2.prev = 34;
+                  _context2.t0 = _context2['catch'](28);
 
-                case 36:
+                  console.log(_context2.t0);
+                  return _context2.abrupt('continue', 24);
+
+                case 38:
 
                   // Sum up expected servers
                   for (i = 0; i < result.members.length; i++) {
@@ -313,40 +336,45 @@ var ReplSet = function () {
                   // Validate the state
 
                   if (!(state.primaries == 1 && state.arbiters == numberOfArbiters && state.secondaries == self.nodes.length - numberOfArbiters - 1)) {
-                    _context2.next = 40;
+                    _context2.next = 42;
                     break;
                   }
 
-                  return _context2.abrupt('break', 42);
-
-                case 40:
-                  _context2.next = 23;
-                  break;
+                  return _context2.abrupt('break', 44);
 
                 case 42:
-                  _context2.next = 44;
-                  return self.waitForPrimary();
+                  _context2.next = 24;
+                  break;
 
                 case 44:
                   _context2.next = 46;
-                  return self.managers[0].ismaster();
+                  return self.waitForPrimary();
 
                 case 46:
+                  _context2.next = 48;
+                  return self.managers[0].ismaster();
+
+                case 48:
                   ismaster = _context2.sent;
 
                   // Save the current election Id if it exists
                   self.electionId = ismaster.electionId;
                   self.lastKnownPrimary = ismaster.me;
 
+                  // Emit start event
+                  self.emit('state', {
+                    event: 'running', topology: 'replSet', nodes: self.nodes, options: self.options
+                  });
+
                   // We have a stable replicaset
                   resolve();
 
-                case 50:
+                case 53:
                 case 'end':
                   return _context2.stop();
               }
             }
-          }, _callee2, this, [[27, 33]]);
+          }, _callee2, this, [[28, 34]]);
         })).catch(reject);
       });
     }
@@ -756,10 +784,9 @@ var ReplSet = function () {
                   // Step down command
                   command = {
                     replSetStepDown: typeof options.stepDownSecs == 'number' ? options.stepDownSecs : 60
+
+                    // Remove stepDownSecs
                   };
-
-                  // Remove stepDownSecs
-
                   delete options['stepDownSecs'];
                   // Mix in any other options
                   for (name in options) {
@@ -1211,8 +1238,11 @@ var ReplSet = function () {
                   // Create a new server instance
                   server = new Server(self.binary, opts, self.options);
 
-                  // If we have an existing manager remove it
+                  server.on('state', function (state) {
+                    self.emit('state', state);
+                  });
 
+                  // If we have an existing manager remove it
                   newManagers = [];
 
                   // Need to wait for Primary
@@ -1222,68 +1252,68 @@ var ReplSet = function () {
 
                   i = 0;
 
-                case 8:
+                case 9:
                   if (!(i < self.managers.length)) {
-                    _context11.next = 21;
+                    _context11.next = 22;
                     break;
                   }
 
                   if (!(f('%s:%s', self.managers[i].host, self.managers[i].port) == f('%s:%s', server.host, server.port))) {
-                    _context11.next = 17;
+                    _context11.next = 18;
                     break;
                   }
 
-                  _context11.next = 12;
+                  _context11.next = 13;
                   return self.managers[i].stop();
 
-                case 12:
-                  _context11.next = 14;
+                case 13:
+                  _context11.next = 15;
                   return self.managers[i].purge();
 
-                case 14:
+                case 15:
                   needWaitForPrimary = true;
-                  _context11.next = 18;
+                  _context11.next = 19;
                   break;
-
-                case 17:
-                  newManagers.push(self.managers[i]);
 
                 case 18:
+                  newManagers.push(self.managers[i]);
+
+                case 19:
                   i++;
-                  _context11.next = 8;
+                  _context11.next = 9;
                   break;
 
-                case 21:
+                case 22:
 
                   // Set up the managers
                   self.managers = newManagers;
 
                   // Purge the directory
-                  _context11.next = 24;
+                  _context11.next = 25;
                   return server.purge();
 
-                case 24:
-                  _context11.next = 26;
+                case 25:
+                  _context11.next = 27;
                   return server.start();
 
-                case 26:
+                case 27:
                   if (!needWaitForPrimary) {
-                    _context11.next = 29;
+                    _context11.next = 30;
                     break;
                   }
 
-                  _context11.next = 29;
+                  _context11.next = 30;
                   return self.waitForPrimary();
 
-                case 29:
+                case 30:
                   if (!(self.configurations.length == 0)) {
-                    _context11.next = 31;
+                    _context11.next = 32;
                     break;
                   }
 
                   return _context11.abrupt('return', reject(new Error('no configurations exist yet, did you start the replicaset?')));
 
-                case 31:
+                case 32:
 
                   // Locate max id
                   max = 0;
@@ -1321,36 +1351,36 @@ var ReplSet = function () {
                   config.version = config.version + 1;
 
                   // Reconfigure the replicaset
-                  _context11.next = 47;
+                  _context11.next = 48;
                   return self.primary();
 
-                case 47:
+                case 48:
                   primary = _context11.sent;
 
                   if (primary) {
-                    _context11.next = 50;
+                    _context11.next = 51;
                     break;
                   }
 
                   return _context11.abrupt('return', reject(new Error('no primary available')));
 
-                case 50:
-                  _context11.next = 52;
+                case 51:
+                  _context11.next = 53;
                   return primary.executeCommand('admin.$cmd', {
                     replSetReconfig: config, force: force
                   }, credentials);
 
-                case 52:
+                case 53:
                   result = _context11.sent;
 
                   if (!(result && result.ok == 0)) {
-                    _context11.next = 55;
+                    _context11.next = 56;
                     break;
                   }
 
                   return _context11.abrupt('return', reject(new Error(f('failed to execute replSetReconfig with configuration [%s]', JSON.stringify(config)))));
 
-                case 55:
+                case 56:
 
                   // Push new configuration to list
                   self.configurations.push(config);
@@ -1361,107 +1391,107 @@ var ReplSet = function () {
                   // If we want to return immediately do so now
 
                   if (!returnImmediately) {
-                    _context11.next = 59;
+                    _context11.next = 60;
                     break;
                   }
 
                   return _context11.abrupt('return', resolve(server));
 
-                case 59:
+                case 60:
 
                   // Found a valid state
                   waitedForElectionCycle = false;
 
                   // Wait for the server to get in a stable state
 
-                case 60:
+                case 61:
                   if (!true) {
-                    _context11.next = 97;
+                    _context11.next = 98;
                     break;
                   }
 
-                  _context11.prev = 61;
-                  _context11.next = 64;
+                  _context11.prev = 62;
+                  _context11.next = 65;
                   return server.ismaster();
 
-                case 64:
+                case 65:
                   ismaster = _context11.sent;
 
                   if (!(ismaster.ismaster && ismaster.electionId && !self.electionId.equals(ismaster.electionId))) {
-                    _context11.next = 71;
+                    _context11.next = 72;
                     break;
                   }
 
-                  _context11.next = 68;
+                  _context11.next = 69;
                   return self.waitForPrimary();
 
-                case 68:
+                case 69:
                   return _context11.abrupt('return', resolve(server));
 
-                case 71:
+                case 72:
                   if (!((ismaster.secondary || ismaster.arbiterOnly) && ismaster.electionId && self.electionId.equals(ismaster.electionId))) {
-                    _context11.next = 75;
+                    _context11.next = 76;
                     break;
                   }
 
                   return _context11.abrupt('return', resolve(server));
 
-                case 75:
+                case 76:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && !waitedForElectionCycle)) {
-                    _context11.next = 81;
+                    _context11.next = 82;
                     break;
                   }
 
                   // Wait for an election cycle to have passed
                   waitedForElectionCycle = true;
-                  _context11.next = 79;
+                  _context11.next = 80;
                   return waitMS(self.electionCycleWaitMS);
 
-                case 79:
-                  _context11.next = 89;
+                case 80:
+                  _context11.next = 90;
                   break;
 
-                case 81:
+                case 82:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && waitedForElectionCycle)) {
-                    _context11.next = 87;
+                    _context11.next = 88;
                     break;
                   }
 
-                  _context11.next = 84;
+                  _context11.next = 85;
                   return self.waitForPrimary();
 
-                case 84:
+                case 85:
                   return _context11.abrupt('return', resolve(server));
 
-                case 87:
-                  _context11.next = 89;
+                case 88:
+                  _context11.next = 90;
                   return waitMS(self.retryWaitMS);
 
-                case 89:
-                  _context11.next = 95;
+                case 90:
+                  _context11.next = 96;
                   break;
 
-                case 91:
-                  _context11.prev = 91;
-                  _context11.t0 = _context11['catch'](61);
-                  _context11.next = 95;
+                case 92:
+                  _context11.prev = 92;
+                  _context11.t0 = _context11['catch'](62);
+                  _context11.next = 96;
                   return waitMS(self.retryWaitMS);
 
-                case 95:
-                  _context11.next = 60;
+                case 96:
+                  _context11.next = 61;
                   break;
 
-                case 97:
+                case 98:
 
                   // Should not reach here
                   reject(new Error(f('failed to successfully add a new member with options [%s]', JSON.stringify(node))));
 
-                case 98:
+                case 99:
                 case 'end':
                   return _context11.stop();
               }
             }
-          }, _callee11, this, [[61, 91]]);
+          }, _callee11, this, [[62, 92]]);
         })).catch(reject);
       });
     }
@@ -1776,15 +1806,18 @@ var ReplSet = function () {
                   return self.purge();
 
                 case 7:
+                  // console.log("=================================== restart 3")
 
                   // Clean out the configuration
                   self.configurations = [];
+                  // console.log("=================================== restart 4")
 
                   // Restart the servers
                   _context15.next = 10;
                   return self.start();
 
                 case 10:
+                  // console.log("=================================== restart 5")
                   resolve();
 
                 case 11:
@@ -1843,7 +1876,7 @@ var ReplSet = function () {
   }]);
 
   return ReplSet;
-}();
+}(EventEmitter);
 
 /*
  * Generate the replicaset configuration file

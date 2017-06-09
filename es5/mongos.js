@@ -4,11 +4,16 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var co = require('co'),
     f = require('util').format,
     mkdirp = require('mkdirp'),
     rimraf = require('rimraf'),
     Logger = require('./logger'),
+    EventEmitter = require('events'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 
@@ -20,33 +25,39 @@ var clone = function clone(o) {
   }return obj;
 };
 
-var Mongos = function () {
+var Mongos = function (_EventEmitter) {
+  _inherits(Mongos, _EventEmitter);
+
   function Mongos(binary, options, clientOptions) {
     _classCallCheck(this, Mongos);
 
+    // Ensure options are correct
+    var _this = _possibleConstructorReturn(this, (Mongos.__proto__ || Object.getPrototypeOf(Mongos)).call(this));
+
     options = options || {};
-    this.options = clone(options);
+    _this.options = clone(options);
 
     // Server state
-    this.state = 'stopped';
+    _this.state = 'stopped';
 
     // Create logger instance
-    this.logger = Logger('Mongos', options);
+    _this.logger = Logger('Mongos', options);
 
     // Unpack default runtime information
-    this.binary = binary || 'mongos';
+    _this.binary = binary || 'mongos';
     // Current process
-    this.process = null;
+    _this.process = null;
     // Current command
-    this.command = null;
+    _this.command = null;
     // Credentials store
-    this.credentials = [];
+    _this.credentials = [];
     // Additional internal client options
-    this.clientOptions = clientOptions || {};
+    _this.clientOptions = clientOptions || {};
 
     // Default values for host and port if not set
-    this.options.bind_ip = typeof this.options.bind_ip == 'string' ? this.options.bind_ip : 'localhost';
-    this.options.port = typeof this.options.port == 'number' ? this.options.port : 27017;
+    _this.options.bind_ip = typeof _this.options.bind_ip == 'string' ? _this.options.bind_ip : 'localhost';
+    _this.options.port = typeof _this.options.port == 'number' ? _this.options.port : 27017;
+    return _this;
   }
 
   _createClass(Mongos, [{
@@ -82,13 +93,13 @@ var Mongos = function () {
                   // Process terminated
                   proc.on('close', function (code) {
                     // Perform version match
-                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/);
+                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/
 
                     // Check if we have ssl
-                    var sslMatch = stdout.match(/ssl/i);
+                    );var sslMatch = stdout.match(/ssl/i
 
                     // Resolve the server version
-                    resolve({
+                    );resolve({
                       version: versionMatch.toString().split('.').map(function (x) {
                         return parseInt(x, 10);
                       }),
@@ -273,8 +284,10 @@ var Mongos = function () {
                     self.logger.info(f('start mongos server [%s]', commandLine));
                   }
 
-                  // console.log("---------------- start mongos")
-                  // console.dir(commandLine)
+                  // Emit start event
+                  self.emit('state', {
+                    event: 'start', topology: 'mongos', cmd: commandLine, options: self.options
+                  });
 
                   // Spawn a mongos process
                   self.process = spawn(self.binary, commandOptions);
@@ -287,7 +300,10 @@ var Mongos = function () {
 
                   self.process.stdout.on('data', function (data) {
                     stdout += data.toString();
-                    // console.log(stdout.toString())
+                    self.emit('state', {
+                      event: 'stdout', topology: 'mongos', stdout: data.toString(), options: self.options
+                    });
+
                     //
                     // Only emit event at start
                     if (self.state == 'stopped') {
@@ -295,6 +311,11 @@ var Mongos = function () {
                         if (self.logger.isInfo()) {
                           self.logger.info(f('successfully started mongos proxy [%s]', commandLine));
                         }
+
+                        // Emit running state
+                        self.emit('state', {
+                          event: 'running', topology: 'mongos', cmd: commandLine, options: self.options
+                        });
 
                         // Mark state as running
                         self.state = 'running';
@@ -311,6 +332,9 @@ var Mongos = function () {
 
                   // Got an error
                   self.process.on('error', function (err) {
+                    self.emit('state', {
+                      event: 'sterr', topology: 'mongos', sterr: sterr.toString(), options: self.options
+                    });
                     self.logger.error(f('failed to start mongos instance [%s]', commandLine));
                     reject(new Error({ error: error, stdout: stdout, stderr: stderr }));
                   });
@@ -325,7 +349,7 @@ var Mongos = function () {
                     self.state = 'stopped';
                   });
 
-                case 20:
+                case 21:
                 case 'end':
                   return _context3.stop();
               }
@@ -537,7 +561,7 @@ var Mongos = function () {
   }]);
 
   return Mongos;
-}();
+}(EventEmitter);
 
 module.exports = Mongos;
 
