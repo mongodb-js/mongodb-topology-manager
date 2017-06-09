@@ -7,6 +7,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var Promise = require("bluebird");
 
 var co = require('co'),
@@ -14,6 +18,7 @@ var co = require('co'),
     mkdirp = require('mkdirp'),
     rimraf = require('rimraf'),
     Logger = require('./logger'),
+    EventEmitter = require('events'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 
@@ -23,33 +28,38 @@ var clone = function clone(o) {
   }return obj;
 };
 
-var Server = function () {
+var Server = function (_EventEmitter) {
+  _inherits(Server, _EventEmitter);
+
   function Server(binary, options, clientOptions) {
     _classCallCheck(this, Server);
 
+    var _this = _possibleConstructorReturn(this, (Server.__proto__ || Object.getPrototypeOf(Server)).call(this));
+
     options = options || {};
-    this.options = clone(options);
+    _this.options = clone(options);
 
     // Server state
-    this.state = 'stopped';
+    _this.state = 'stopped';
 
     // Create logger instance
-    this.logger = Logger('Server', options);
+    _this.logger = Logger('Server', options);
 
     // Unpack default runtime information
-    this.binary = binary || 'mongod';
+    _this.binary = binary || 'mongod';
     // Current process
-    this.process = null;
+    _this.process = null;
     // Current command
-    this.command = null;
+    _this.command = null;
     // Credentials store
-    this.credentials = [];
+    _this.credentials = [];
     // Additional internal client options
-    this.clientOptions = clientOptions || {};
+    _this.clientOptions = clientOptions || {};
 
     // Default values for host and port if not set
-    this.options.bind_ip = typeof this.options.bind_ip == 'string' ? this.options.bind_ip : 'localhost';
-    this.options.port = typeof this.options.port == 'number' ? this.options.port : 27017;
+    _this.options.bind_ip = typeof _this.options.bind_ip == 'string' ? _this.options.bind_ip : 'localhost';
+    _this.options.port = typeof _this.options.port == 'number' ? _this.options.port : 27017;
+    return _this;
   }
 
   _createClass(Server, [{
@@ -96,13 +106,13 @@ var Server = function () {
                   // Process terminated
                   proc.on('close', function (code) {
                     // Perform version match
-                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/);
+                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/
 
                     // Check if we have ssl
-                    var sslMatch = stdout.match(/ssl/i);
+                    );var sslMatch = stdout.match(/ssl/i
 
                     // Resolve the server version
-                    resolve({
+                    );resolve({
                       version: versionMatch.toString().split('.').map(function (x) {
                         return parseInt(x, 10);
                       }),
@@ -378,8 +388,11 @@ var Server = function () {
 
                   // Command line
                   commandLine = f('%s %s', self.binary, commandOptions.join(' '));
-                  // console.log("----------------------------------------------------------------------------")
-                  // console.log(commandLine)
+                  // Emit start event
+
+                  self.emit('state', {
+                    event: 'start', topology: 'server', cmd: commandLine, options: self.options
+                  });
 
                   if (self.logger.isInfo()) {
                     self.logger.info(f('started mongod with [%s]', commandLine));
@@ -396,7 +409,9 @@ var Server = function () {
 
                   self.process.stdout.on('data', function (data) {
                     stdout += data.toString();
-                    // console.log(data.toString())
+                    self.emit('state', {
+                      event: 'stdout', topology: 'server', stdout: data.toString(), options: self.options
+                    });
 
                     //
                     // Only emit event at start
@@ -404,6 +419,12 @@ var Server = function () {
                       if (stdout.indexOf('waiting for connections') != -1 || stdout.indexOf('connection accepted') != -1) {
                         // Mark state as running
                         self.state = 'running';
+
+                        // Emit start event
+                        self.emit('state', {
+                          event: 'running', topology: 'server', cmd: commandLine, options: self.options
+                        });
+
                         // Resolve
                         resolve();
                       }
@@ -417,6 +438,9 @@ var Server = function () {
 
                   // Got an error
                   self.process.on('error', function (err) {
+                    self.emit('state', {
+                      event: 'sterr', topology: 'server', stdout: stdout, sterr: sterr.toString(), options: self.options
+                    });
                     reject(new Error({ error: error, stdout: stdout, stderr: stderr }));
                   });
 
@@ -429,7 +453,7 @@ var Server = function () {
                     self.state = 'stopped';
                   });
 
-                case 22:
+                case 23:
                 case "end":
                   return _context4.stop();
               }
@@ -652,7 +676,7 @@ var Server = function () {
   }]);
 
   return Server;
-}();
+}(EventEmitter);
 
 module.exports = Server;
 

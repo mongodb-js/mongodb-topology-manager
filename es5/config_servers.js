@@ -4,11 +4,16 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var co = require('co'),
     f = require('util').format,
     mkdirp = require('mkdirp'),
     rimraf = require('rimraf'),
     Server = require('./server'),
+    EventEmitter = require('events'),
     CoreServer = require('mongodb-core').Server,
     spawn = require('child_process').spawn;
 
@@ -28,39 +33,43 @@ var waitMS = function waitMS(ms) {
   });
 };
 
-var ConfigServers = function () {
+var ConfigServers = function (_EventEmitter) {
+  _inherits(ConfigServers, _EventEmitter);
+
   function ConfigServers(binary, nodes, options) {
     _classCallCheck(this, ConfigServers);
 
+    var _this = _possibleConstructorReturn(this, (ConfigServers.__proto__ || Object.getPrototypeOf(ConfigServers)).call(this));
+
     options = options || {};
     // Save the default passed in parameters
-    this.nodes = nodes;
-    this.options = clone(options);
+    _this.nodes = nodes;
+    _this.options = clone(options);
 
     // Ensure we have a list of nodes
-    if (!Array.isArray(this.nodes) || this.nodes.length == 0) {
+    if (!Array.isArray(_this.nodes) || _this.nodes.length == 0) {
       throw new Error('a list of nodes must be passed in');
     }
 
     // Server state
-    this.state = 'stopped';
+    _this.state = 'stopped';
 
     // Unpack default runtime information
-    this.binary = binary || 'mongod';
+    _this.binary = binary || 'mongod';
 
     // Wait times
-    this.electionCycleWaitMS = typeof this.options.electionCycleWaitMS == 'number' ? this.options.electionCycleWaitMS : 31000;
-    this.retryWaitMS = typeof this.options.retryWaitMS == 'number' ? this.options.retryWaitMS : 5000;
+    _this.electionCycleWaitMS = typeof _this.options.electionCycleWaitMS == 'number' ? _this.options.electionCycleWaitMS : 31000;
+    _this.retryWaitMS = typeof _this.options.retryWaitMS == 'number' ? _this.options.retryWaitMS : 5000;
 
     // Remove the values from the options
-    delete this.options['electionCycleWaitMS'];
-    delete this.options['retryWaitMS'];
+    delete _this.options['electionCycleWaitMS'];
+    delete _this.options['retryWaitMS'];
 
     // Self reference
-    var self = this;
+    var self = _this;
 
     // Create server managers for each node
-    this.managers = this.nodes.map(function (x) {
+    _this.managers = _this.nodes.map(function (x) {
       var opts = clone(x);
       delete opts['logpath'];
       delete opts['replSet'];
@@ -70,10 +79,14 @@ var ConfigServers = function () {
 
       // Set server instance
       var server = new Server(self.binary, opts, options);
+      server.on('state', function (state) {
+        self.emit('state', state);
+      });
 
       // Create manager
       return server;
     });
+    return _this;
   }
 
   _createClass(ConfigServers, [{
@@ -109,13 +122,13 @@ var ConfigServers = function () {
                   // Process terminated
                   proc.on('close', function (code) {
                     // Perform version match
-                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/);
+                    var versionMatch = stdout.match(/[0-9]+\.[0-9]+\.[0-9]+/
 
                     // Check if we have ssl
-                    var sslMatch = stdout.match(/ssl/i);
+                    );var sslMatch = stdout.match(/ssl/i
 
                     // Resolve the server version
-                    resolve({
+                    );resolve({
                       version: versionMatch.toString().split('.').map(function (x) {
                         return parseInt(x, 10);
                       }),
@@ -152,23 +165,35 @@ var ConfigServers = function () {
                   return _context2.abrupt('return', resolve());
 
                 case 2:
+
+                  // Emit start event
+                  self.emit('state', {
+                    event: 'start', topology: 'configurationServers', nodes: self.nodes, options: self.options
+                  });
+
+                  // Boot all the servers
                   i = 0;
 
-                case 3:
+                case 4:
                   if (!(i < self.managers.length)) {
-                    _context2.next = 9;
+                    _context2.next = 10;
                     break;
                   }
 
-                  _context2.next = 6;
+                  _context2.next = 7;
                   return self.managers[i].start();
 
-                case 6:
+                case 7:
                   i++;
-                  _context2.next = 3;
+                  _context2.next = 4;
                   break;
 
-                case 9:
+                case 10:
+
+                  // Emit start event
+                  self.emit('state', {
+                    event: 'running', topology: 'configurationServers', nodes: self.nodes, options: self.options
+                  });
 
                   // Set the state to running
                   self.state == 'running';
@@ -176,7 +201,7 @@ var ConfigServers = function () {
                   // We have a stable replicaset
                   resolve();
 
-                case 11:
+                case 13:
                 case 'end':
                   return _context2.stop();
               }
@@ -451,10 +476,9 @@ var ConfigServers = function () {
                   // Step down command
                   command = {
                     replSetStepDown: typeof options.stepDownSecs == 'number' ? options.stepDownSecs : 60
+
+                    // Remove stepDownSecs
                   };
-
-                  // Remove stepDownSecs
-
                   delete options['stepDownSecs'];
                   // Mix in any other options
                   for (name in options) {
@@ -810,24 +834,27 @@ var ConfigServers = function () {
                   // Create a new server instance
                   server = new Server(self.binary, opts, self.options);
 
-                  // Purge the directory
+                  server.on('state', function (state) {
+                    self.emit('state', state);
+                  });
 
-                  _context9.next = 7;
+                  // Purge the directory
+                  _context9.next = 8;
                   return server.purge();
 
-                case 7:
-                  _context9.next = 9;
+                case 8:
+                  _context9.next = 10;
                   return server.start();
 
-                case 9:
+                case 10:
                   if (!(self.configurations.length == 0)) {
-                    _context9.next = 11;
+                    _context9.next = 12;
                     break;
                   }
 
                   return _context9.abrupt('return', reject(new Error('no configurations exist yet, did you start the replicaset?')));
 
-                case 11:
+                case 12:
 
                   // Locate max id
                   max = 0;
@@ -865,36 +892,36 @@ var ConfigServers = function () {
                   config.version = config.version + 1;
 
                   // Reconfigure the replicaset
-                  _context9.next = 27;
+                  _context9.next = 28;
                   return self.primary();
 
-                case 27:
+                case 28:
                   primary = _context9.sent;
 
                   if (primary) {
-                    _context9.next = 30;
+                    _context9.next = 31;
                     break;
                   }
 
                   return _context9.abrupt('return', reject(new Error('no primary available')));
 
-                case 30:
-                  _context9.next = 32;
+                case 31:
+                  _context9.next = 33;
                   return primary.executeCommand('admin.$cmd', {
                     replSetReconfig: config, force: force
                   }, credentials);
 
-                case 32:
+                case 33:
                   result = _context9.sent;
 
                   if (!(result && result.ok == 0)) {
-                    _context9.next = 35;
+                    _context9.next = 36;
                     break;
                   }
 
                   return _context9.abrupt('return', reject(new Error(f('failed to execute replSetReconfig with configuration [%s]', JSON.stringify(config)))));
 
-                case 35:
+                case 36:
 
                   // Push new configuration to list
                   self.configurations.push(config);
@@ -905,103 +932,103 @@ var ConfigServers = function () {
                   // If we want to return immediately do so now
 
                   if (!returnImmediately) {
-                    _context9.next = 39;
+                    _context9.next = 40;
                     break;
                   }
 
                   return _context9.abrupt('return', resolve(server));
 
-                case 39:
+                case 40:
 
                   // Found a valid state
                   waitedForElectionCycle = false;
 
                   // Wait for the server to get in a stable state
 
-                case 40:
+                case 41:
                   if (!true) {
-                    _context9.next = 75;
+                    _context9.next = 76;
                     break;
                   }
 
-                  _context9.prev = 41;
-                  _context9.next = 44;
+                  _context9.prev = 42;
+                  _context9.next = 45;
                   return server.ismaster();
 
-                case 44:
+                case 45:
                   ismaster = _context9.sent;
 
                   if (!(ismaster.ismaster && ismaster.electionId && !self.electionId.equals(ismaster.electionId))) {
-                    _context9.next = 51;
+                    _context9.next = 52;
                     break;
                   }
 
-                  _context9.next = 48;
+                  _context9.next = 49;
                   return self.waitForPrimary();
 
-                case 48:
+                case 49:
                   return _context9.abrupt('return', resolve(server));
 
-                case 51:
+                case 52:
                   if (!((ismaster.secondary || ismaster.arbiterOnly) && ismaster.electionId && self.electionId.equals(ismaster.electionId))) {
-                    _context9.next = 55;
+                    _context9.next = 56;
                     break;
                   }
 
                   return _context9.abrupt('return', resolve(server));
 
-                case 55:
+                case 56:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && !waitedForElectionCycle)) {
-                    _context9.next = 61;
+                    _context9.next = 62;
                     break;
                   }
 
                   // Wait for an election cycle to have passed
                   waitedForElectionCycle = true;
-                  _context9.next = 59;
+                  _context9.next = 60;
                   return waitMS(self.electionCycleWaitMS);
 
-                case 59:
-                  _context9.next = 67;
+                case 60:
+                  _context9.next = 68;
                   break;
 
-                case 61:
+                case 62:
                   if (!((ismaster.ismaster || ismaster.secondary || ismaster.arbiterOnly) && waitedForElectionCycle)) {
-                    _context9.next = 65;
+                    _context9.next = 66;
                     break;
                   }
 
                   return _context9.abrupt('return', resolve(server));
 
-                case 65:
-                  _context9.next = 67;
+                case 66:
+                  _context9.next = 68;
                   return waitMS(self.retryWaitMS);
 
-                case 67:
-                  _context9.next = 73;
+                case 68:
+                  _context9.next = 74;
                   break;
 
-                case 69:
-                  _context9.prev = 69;
-                  _context9.t0 = _context9['catch'](41);
-                  _context9.next = 73;
+                case 70:
+                  _context9.prev = 70;
+                  _context9.t0 = _context9['catch'](42);
+                  _context9.next = 74;
                   return waitMS(self.retryWaitMS);
 
-                case 73:
-                  _context9.next = 40;
+                case 74:
+                  _context9.next = 41;
                   break;
 
-                case 75:
+                case 76:
 
                   // Should not reach here
                   reject(new Error(f('failed to successfully add a new member with options [%s]', JSON.stringify(node))));
 
-                case 76:
+                case 77:
                 case 'end':
                   return _context9.stop();
               }
             }
-          }, _callee9, this, [[41, 69]]);
+          }, _callee9, this, [[42, 70]]);
         })).catch(reject);
       });
     }
@@ -1457,6 +1484,6 @@ var ConfigServers = function () {
   }]);
 
   return ConfigServers;
-}();
+}(EventEmitter);
 
 module.exports = ConfigServers;
