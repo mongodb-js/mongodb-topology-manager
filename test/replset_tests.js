@@ -2,16 +2,7 @@
 
 var co = require('co'),
   f = require('util').format,
-  Logger = require('../lib/logger'),
   assert = require('assert');
-
-// Polyfill Promise if none exists
-if (!global.Promise) {
-  require('es6-promise').polyfill();
-}
-
-// Get babel polyfill
-require('babel-polyfill');
 
 describe('ReplSet', function() {
   describe('manager', function() {
@@ -60,9 +51,9 @@ describe('ReplSet', function() {
         // Perform discovery
         var version = yield topology.discover();
         // Expect 3 integers
-        assert.ok(typeof version.version[0] == 'number');
-        assert.ok(typeof version.version[1] == 'number');
-        assert.ok(typeof version.version[2] == 'number');
+        assert.ok(typeof version.version[0] === 'number');
+        assert.ok(typeof version.version[1] === 'number');
+        assert.ok(typeof version.version[2] === 'number');
         done();
       }).catch(function(err) {
         console.log(err.stack);
@@ -328,7 +319,7 @@ describe('ReplSet', function() {
         yield topology.start();
 
         // Add a new member to the set
-        var manager = yield topology.addMember(
+        yield topology.addMember(
           {
             options: {
               bind_ip: 'localhost',
@@ -412,7 +403,7 @@ describe('ReplSet', function() {
         yield topology.start();
 
         // Add a new member to the set
-        var manager = yield topology.addMember(
+        yield topology.addMember(
           {
             priority: 20,
             options: {
@@ -594,7 +585,7 @@ describe('ReplSet', function() {
           returnImmediately: false
         });
 
-        var ismaster = yield secondaries[0].ismaster();
+        ismaster = yield secondaries[0].ismaster();
         assert.equal(true, ismaster.secondary);
 
         // Stop the set

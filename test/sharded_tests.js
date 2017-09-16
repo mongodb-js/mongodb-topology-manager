@@ -2,16 +2,7 @@
 
 var co = require('co'),
   f = require('util').format,
-  Logger = require('../lib/logger'),
   assert = require('assert');
-
-// Polyfill Promise if none exists
-if (!global.Promise) {
-  require('es6-promise').polyfill();
-}
-
-// Get babel polyfill
-require('babel-polyfill');
 
 describe('Sharded', function() {
   describe('manager', function() {
@@ -25,9 +16,9 @@ describe('Sharded', function() {
         // Perform discovery
         var version = yield topology.discover();
         // Expect 3 integers
-        assert.ok(typeof version.version[0] == 'number');
-        assert.ok(typeof version.version[1] == 'number');
-        assert.ok(typeof version.version[2] == 'number');
+        assert.ok(typeof version.version[0] === 'number');
+        assert.ok(typeof version.version[1] === 'number');
+        assert.ok(typeof version.version[2] === 'number');
         done();
       }).catch(function(err) {
         console.log(err.stack);
