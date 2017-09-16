@@ -7,11 +7,13 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha --recursive test"
+    "test": "mocha --recursive test",
+    "lint": "eslint index.js lib test",
+    "format": "prettier --print-width 100 --tab-width 2 --single-quote --write index.js 'test/**/*.js' 'lib/**/*.js'"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/christkv/mongodb-topology-manager.git"
+    "url": "https://github.com/mongodb-js/mongodb-topology-manager.git"
   },
   "keywords": [
     "mongodb",
@@ -34,6 +36,8 @@
     "rimraf": "^2.6.2"
   },
   "devDependencies": {
-    "mocha": "^3.5.3"
+    "eslint-plugin-prettier": "^2.2.0",
+    "mocha": "^3.5.3",
+    "prettier": "^1.6.1"
   }
 }
