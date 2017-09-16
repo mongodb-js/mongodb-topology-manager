@@ -1,16 +1,16 @@
-"use strict"
+'use strict';
 
 var co = require('co'),
   f = require('util').format,
   assert = require('assert');
 
 // Polyfill Promise if none exists
-if(!global.Promise) {
+if (!global.Promise) {
   require('es6-promise').polyfill();
 }
 
 // Get babel polyfill
-require("babel-polyfill");
+require('babel-polyfill');
 
 describe('Server', function() {
   describe('manager', function() {
@@ -144,7 +144,8 @@ describe('Server', function() {
 
         // Create new instance
         var server = new Server('mongod', {
-          dbpath: dbpath, auth:null
+          dbpath: dbpath,
+          auth: null
         });
 
         // Start process
@@ -174,20 +175,24 @@ describe('Server', function() {
         var dbpath = f('%s/../db', __dirname);
 
         // Create new instance
-        var server = new Server('mongod', {
-          dbpath: dbpath,
-          sslOnNormalPorts:null,
-          sslPEMKeyFile: f('%s/ssl/server.pem', __dirname),
-          sslAllowInvalidCertificates:null
-        }, {
-          ssl:true,
-          rejectUnauthorized:false
-        });
+        var server = new Server(
+          'mongod',
+          {
+            dbpath: dbpath,
+            sslOnNormalPorts: null,
+            sslPEMKeyFile: f('%s/ssl/server.pem', __dirname),
+            sslAllowInvalidCertificates: null
+          },
+          {
+            ssl: true,
+            rejectUnauthorized: false
+          }
+        );
 
         // Perform discovery
         var result = yield server.discover();
         // Skip ssl test
-        if(!result.ssl) return done();
+        if (!result.ssl) return done();
 
         // Start process
         yield server.start();
