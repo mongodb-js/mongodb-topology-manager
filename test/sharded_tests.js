@@ -178,9 +178,7 @@ describe('Sharded', function() {
       });
     });
 
-    it('create a sharded system with a single shard and take down mongos and bring it back', function(
-      done
-    ) {
+    it('create a sharded system with a single shard and take down mongos and bring it back', function(done) {
       this.timeout(250000);
 
       co(function*() {

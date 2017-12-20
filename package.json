@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha --recursive test",
+    "test": "npm run lint && mocha --recursive test",
     "lint": "eslint index.js lib test",
     "format": "prettier --print-width 100 --tab-width 2 --single-quote --write index.js 'test/**/*.js' 'lib/**/*.js'"
   },
@@ -21,6 +21,9 @@
     "management",
     "api"
   ],
+  "engines": {
+    "node": ">=4"
+  },
   "author": "Christian Amor Kvalheim",
   "license": "Apache-2.0",
   "bugs": {
@@ -28,7 +31,7 @@
   },
   "homepage": "https://github.com/christkv/mongodb-topology-manager",
   "dependencies": {
-    "bluebird": "^3.5.0",
+    "bluebird": "^3.5.1",
     "co": "^4.6.0",
     "kerberos": "^0.0.23",
     "mkdirp": "^0.5.1",
@@ -36,9 +39,9 @@
     "rimraf": "^2.6.2"
   },
   "devDependencies": {
-    "eslint": "^4.7.0",
-    "eslint-plugin-prettier": "^2.2.0",
-    "mocha": "^3.5.3",
-    "prettier": "^1.6.1"
+    "eslint": "^4.13.1",
+    "eslint-plugin-prettier": "^2.4.0",
+    "mocha": "^4.0.1",
+    "prettier": "^1.9.2"
   }
 }
