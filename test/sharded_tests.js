@@ -43,14 +43,16 @@ describe('Sharded', function() {
               options: {
                 bind_ip: 'localhost',
                 port: 31000,
-                dbpath: f('%s/../db/31000', __dirname)
+                dbpath: f('%s/../db/31000', __dirname),
+                shardsvr: null
               }
             },
             {
               options: {
                 bind_ip: 'localhost',
                 port: 31001,
-                dbpath: f('%s/../db/31001', __dirname)
+                dbpath: f('%s/../db/31001', __dirname),
+                shardsvr: null
               }
             },
             {
@@ -60,7 +62,8 @@ describe('Sharded', function() {
               options: {
                 bind_ip: 'localhost',
                 port: 31002,
-                dbpath: f('%s/../db/31002', __dirname)
+                dbpath: f('%s/../db/31002', __dirname),
+                shardsvr: null
               }
             }
           ],
@@ -76,14 +79,16 @@ describe('Sharded', function() {
               options: {
                 bind_ip: 'localhost',
                 port: 31010,
-                dbpath: f('%s/../db/31010', __dirname)
+                dbpath: f('%s/../db/31010', __dirname),
+                shardsvr: null
               }
             },
             {
               options: {
                 bind_ip: 'localhost',
                 port: 31011,
-                dbpath: f('%s/../db/31011', __dirname)
+                dbpath: f('%s/../db/31011', __dirname),
+                shardsvr: null
               }
             },
             {
@@ -93,7 +98,8 @@ describe('Sharded', function() {
               options: {
                 bind_ip: 'localhost',
                 port: 31012,
-                dbpath: f('%s/../db/31012', __dirname)
+                dbpath: f('%s/../db/31012', __dirname),
+                shardsvr: null
               }
             }
           ],
@@ -192,14 +198,16 @@ describe('Sharded', function() {
               options: {
                 bind_ip: 'localhost',
                 port: 31000,
-                dbpath: f('%s/../db/31000', __dirname)
+                dbpath: f('%s/../db/31000', __dirname),
+                shardsvr: null
               }
             },
             {
               options: {
                 bind_ip: 'localhost',
                 port: 31001,
-                dbpath: f('%s/../db/31001', __dirname)
+                dbpath: f('%s/../db/31001', __dirname),
+                shardsvr: null
               }
             },
             {
@@ -209,7 +217,8 @@ describe('Sharded', function() {
               options: {
                 bind_ip: 'localhost',
                 port: 31002,
-                dbpath: f('%s/../db/31002', __dirname)
+                dbpath: f('%s/../db/31002', __dirname),
+                shardsvr: null
               }
             }
           ],
