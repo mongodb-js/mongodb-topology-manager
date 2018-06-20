@@ -10,17 +10,22 @@ It's very simple to create a single running MongoDB instance. All examples are u
 var Server = require('mongodb-topology-manager').Server;
 // Create new instance
 var server = new Server('binary', {
-  dbpath: f('%s/db', __dirname)
+  dbpath: './db'
 });
 
-// Perform discovery
-var result = yield server.discover();
-// Purge the directory
-yield server.purge();
-// Start process
-yield server.start();
-// Stop the process
-yield server.stop();
+const init = async () => {
+  // Perform discovery
+  var result = await server.discover();
+  // Purge the directory
+  await server.purge();
+  // Start process
+  await server.start();
+  // Stop the process
+  await server.stop();
+}
+
+// start the server
+init();
 ```
 
 ## Setting up a replicaset
@@ -34,32 +39,37 @@ var ReplSet = require('mongodb-topology-manager').ReplSet;
 var topology = new ReplSet('mongod', [{
   // mongod process options
   options: {
-    bind_ip: 'localhost', port: 31000, dbpath: f('%s/../db/31000', __dirname)
+    bind_ip: 'localhost', port: 31000, dbpath: './db-1'
   }
 }, {
   // mongod process options
   options: {
-    bind_ip: 'localhost', port: 31001, dbpath: f('%s/../db/31001', __dirname)
+    bind_ip: 'localhost', port: 31001, dbpath: './db-2'
   }
 }, {
   // Type of node
   arbiterOnly: true,
   // mongod process options
   options: {
-    bind_ip: 'localhost', port: 31002, dbpath: f('%s/../db/31002', __dirname)
+    bind_ip: 'localhost', port: 31002, dbpath: './db-3'
   }
 }], {
   replSet: 'rs'
 });
 
-// Perform discovery
-var result = yield server.discover();
-// Purge the directory
-yield server.purge();
-// Start process
-yield server.start();
-// Stop the process
-yield server.stop();
+const init = async () => {
+  // Perform discovery
+  var result = await server.discover();
+  // Purge the directory
+  await server.purge();
+  // Start process
+  await server.start();
+  // Stop the process
+  await server.stop();
+}
+
+// start the replica set
+init();
 ```
 
 Each of the node objects can take the following options at the top level.
@@ -108,88 +118,92 @@ It's a little bit more complicated to set up a Sharded system but not much more.
 ```js
 var Sharded = require('mongodb-topology-manager').Sharded;
 
-// Create new instance
-var topology = new Sharded({
-  mongod: 'mongod', mongos: 'mongos'
-});
+const init = async () => {
+  // Create new instance
+  var topology = new Sharded({
+    mongod: 'mongod', mongos: 'mongos'
+  });
 
-// Add one shard
-yield topology.addShard([{
-  options: {
-    bind_ip: 'localhost', port: 31000, dbpath: f('%s/../db/31000', __dirname)
-  }
-}, {
-  options: {
-    bind_ip: 'localhost', port: 31001, dbpath: f('%s/../db/31001', __dirname)
-  }
-}, {
-  // Type of node
-  arbiter: true,
-  // mongod process options
-  options: {
-    bind_ip: 'localhost', port: 31002, dbpath: f('%s/../db/31002', __dirname)
-  }
-}], {
-  replSet: 'rs1'
-});
+  // Add one shard
+  await topology.addShard([{
+    options: {
+      bind_ip: 'localhost', port: 31000, dbpath: './db-1'
+    }
+  }, {
+    options: {
+      bind_ip: 'localhost', port: 31001, dbpath: './db-2'
+  }, {
+    // Type of node
+    arbiter: true,
+    // mongod process options
+    options: {
+      bind_ip: 'localhost', port: 31002, dbpath: './db-3'
+    }
+  }], {
+    replSet: 'rs1'
+  });
 
-// Add one shard
-yield topology.addShard([{
-  options: {
-    bind_ip: 'localhost', port: 31010, dbpath: f('%s/../db/31010', __dirname)
-  }
-}, {
-  options: {
-    bind_ip: 'localhost', port: 31011, dbpath: f('%s/../db/31011', __dirname)
-  }
-}, {
-  // Type of node
-  arbiter: true,
-  // mongod process options
-  options: {
-    bind_ip: 'localhost', port: 31012, dbpath: f('%s/../db/31012', __dirname)
-  }
-}], {
-  replSet: 'rs2'
-});
+  // Add one shard
+  await topology.addShard([{
+    options: {
+      bind_ip: 'localhost', port: 31010, dbpath: './db-4'
+    }
+  }, {
+    options: {
+      bind_ip: 'localhost', port: 31011, dbpath: './db-5'
+    }
+  }, {
+    // Type of node
+    arbiter: true,
+    // mongod process options
+    options: {
+      bind_ip: 'localhost', port: 31012, dbpath: './db-6'
+    }
+  }], {
+    replSet: 'rs2'
+  });
 
-// Add configuration servers
-yield topology.addConfigurationServers([{
-  options: {
-    bind_ip: 'localhost', port: 35000, dbpath: f('%s/../db/35000', __dirname)
-  }
-}, {
-  options: {
-    bind_ip: 'localhost', port: 35001, dbpath: f('%s/../db/35001', __dirname)
-  }
-}, {
-  options: {
-    bind_ip: 'localhost', port: 35002, dbpath: f('%s/../db/35002', __dirname)
-  }
-}], {
-  replSet: 'rs3'
-});
+  // Add configuration servers
+  await topology.addConfigurationServers([{
+    options: {
+      bind_ip: 'localhost', port: 35000, dbpath: './db-7'
+    }
+  }, {
+    options: {
+      bind_ip: 'localhost', port: 35001, dbpath: './db-8'
+    }
+  }, {
+    options: {
+      bind_ip: 'localhost', port: 35002, dbpath: './db-9'
+    }
+  }], {
+    replSet: 'rs3'
+  });
 
-// Add proxies
-yield topology.addProxies([{
-  bind_ip: 'localhost', port: 51000, configdb: 'localhost:35000,localhost:35001,localhost:35002'
-}, {
-  bind_ip: 'localhost', port: 51001, configdb: 'localhost:35000,localhost:35001,localhost:35002'
-}], {
-  binary: 'mongos'
-});
+  // Add proxies
+  await topology.addProxies([{
+    bind_ip: 'localhost', port: 51000, configdb: 'localhost:35000,localhost:35001,localhost:35002'
+  }, {
+    bind_ip: 'localhost', port: 51001, configdb: 'localhost:35000,localhost:35001,localhost:35002'
+  }], {
+    binary: 'mongos'
+  });
 
-// Start up topology
-yield topology.start();
+  // Start up topology
+  await topology.start();
 
-// Shard db
-yield topology.enableSharding('test');
+  // Shard db
+  await topology.enableSharding('test');
 
-// Shard a collection
-yield topology.shardCollection('test', 'testcollection', {_id: 1});
+  // Shard a collection
+  await topology.shardCollection('test', 'testcollection', {_id: 1});
 
-// Stop the topology
-yield topology.stop();
+  // Stop the topology
+  await topology.stop();
+}
+
+// start the shards
+init();
 ```
 
 The Sharded manager has the following methods
