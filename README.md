@@ -127,17 +127,17 @@ const init = async () => {
   // Add one shard
   await topology.addShard([{
     options: {
-      bind_ip: 'localhost', port: 31000, dbpath: './db-1'
+      bind_ip: 'localhost', port: 31000, dbpath: './db-1', shardsvr: null
     }
   }, {
     options: {
-      bind_ip: 'localhost', port: 31001, dbpath: './db-2'
+      bind_ip: 'localhost', port: 31001, dbpath: './db-2', shardsvr: null
   }, {
     // Type of node
     arbiter: true,
     // mongod process options
     options: {
-      bind_ip: 'localhost', port: 31002, dbpath: './db-3'
+      bind_ip: 'localhost', port: 31002, dbpath: './db-3', shardsvr: null
     }
   }], {
     replSet: 'rs1'
@@ -146,18 +146,18 @@ const init = async () => {
   // Add one shard
   await topology.addShard([{
     options: {
-      bind_ip: 'localhost', port: 31010, dbpath: './db-4'
+      bind_ip: 'localhost', port: 31010, dbpath: './db-4', shardsvr: null
     }
   }, {
     options: {
-      bind_ip: 'localhost', port: 31011, dbpath: './db-5'
+      bind_ip: 'localhost', port: 31011, dbpath: './db-5', shardsvr: null
     }
   }, {
     // Type of node
     arbiter: true,
     // mongod process options
     options: {
-      bind_ip: 'localhost', port: 31012, dbpath: './db-6'
+      bind_ip: 'localhost', port: 31012, dbpath: './db-6', shardsvr: null
     }
   }], {
     replSet: 'rs2'
