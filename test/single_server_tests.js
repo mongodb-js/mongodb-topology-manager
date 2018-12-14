@@ -55,186 +55,186 @@ describe('Server', function() {
       });
     });
 
-    it('restart server instance', function(done) {
-      this.timeout(5000);
+    // it('restart server instance', function(done) {
+    //   this.timeout(5000);
 
-      co(function*() {
-        var Server = require('../').Server;
+    //   co(function*() {
+    //     var Server = require('../').Server;
 
-        // Create dbpath
-        var dbpath = f('%s/../db', __dirname);
+    //     // Create dbpath
+    //     var dbpath = f('%s/../db', __dirname);
 
-        // Create new instance
-        var server = new Server('mongod', {
-          dbpath: dbpath
-        });
+    //     // Create new instance
+    //     var server = new Server('mongod', {
+    //       dbpath: dbpath
+    //     });
 
-        // Start process
-        yield server.start();
+    //     // Start process
+    //     yield server.start();
 
-        // Get current pid
-        var pid1 = server.process.pid;
+    //     // Get current pid
+    //     var pid1 = server.process.pid;
 
-        // Restart
-        yield server.restart();
+    //     // Restart
+    //     yield server.restart();
 
-        // Get new pid
-        var pid2 = server.process.pid;
+    //     // Get new pid
+    //     var pid2 = server.process.pid;
 
-        // Stop the process
-        yield server.stop();
+    //     // Stop the process
+    //     yield server.stop();
 
-        // Assert we had different processes
-        assert.ok(pid1 !== pid2);
+    //     // Assert we had different processes
+    //     assert.ok(pid1 !== pid2);
 
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
-      });
-    });
+    //     // Finish test
+    //     done();
+    //   }).catch(function(err) {
+    //     console.log(err);
+    //   });
+    // });
 
-    it('call ismaster on server instance', function(done) {
-      this.timeout(5000);
+    // it('call ismaster on server instance', function(done) {
+    //   this.timeout(5000);
 
-      co(function*() {
-        var Server = require('../').Server;
+    //   co(function*() {
+    //     var Server = require('../').Server;
 
-        // Create dbpath
-        var dbpath = f('%s/../db', __dirname);
+    //     // Create dbpath
+    //     var dbpath = f('%s/../db', __dirname);
 
-        // Create new instance
-        var server = new Server('mongod', {
-          dbpath: dbpath
-        });
+    //     // Create new instance
+    //     var server = new Server('mongod', {
+    //       dbpath: dbpath
+    //     });
 
-        // Start process
-        yield server.start();
+    //     // Start process
+    //     yield server.start();
 
-        // Call ismaster
-        var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+    //     // Call ismaster
+    //     var ismaster = yield server.ismaster();
+    //     assert.equal(true, ismaster.ismaster);
 
-        // Stop the process
-        yield server.stop();
+    //     // Stop the process
+    //     yield server.stop();
 
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
-      });
-    });
+    //     // Finish test
+    //     done();
+    //   }).catch(function(err) {
+    //     console.log(err);
+    //   });
+    // });
 
-    it('start up authenticated server', function(done) {
-      this.timeout(5000);
+    // it('start up authenticated server', function(done) {
+    //   this.timeout(5000);
 
-      co(function*() {
-        var Server = require('../').Server;
+    //   co(function*() {
+    //     var Server = require('../').Server;
 
-        // Create dbpath
-        var dbpath = f('%s/../db', __dirname);
+    //     // Create dbpath
+    //     var dbpath = f('%s/../db', __dirname);
 
-        // Create new instance
-        var server = new Server('mongod', {
-          dbpath: dbpath,
-          auth: null
-        });
+    //     // Create new instance
+    //     var server = new Server('mongod', {
+    //       dbpath: dbpath,
+    //       auth: null
+    //     });
 
-        // Start process
-        yield server.start();
+    //     // Start process
+    //     yield server.start();
 
-        // Call ismaster
-        var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+    //     // Call ismaster
+    //     var ismaster = yield server.ismaster();
+    //     assert.equal(true, ismaster.ismaster);
 
-        // Stop the process
-        yield server.stop();
+    //     // Stop the process
+    //     yield server.stop();
 
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
-      });
-    });
+    //     // Finish test
+    //     done();
+    //   }).catch(function(err) {
+    //     console.log(err);
+    //   });
+    // });
 
-    it('start up ssl server server', function(done) {
-      this.timeout(5000);
+    // it('start up ssl server server', function(done) {
+    //   this.timeout(5000);
 
-      co(function*() {
-        var Server = require('../').Server;
+    //   co(function*() {
+    //     var Server = require('../').Server;
 
-        // Create dbpath
-        var dbpath = f('%s/../db', __dirname);
+    //     // Create dbpath
+    //     var dbpath = f('%s/../db', __dirname);
 
-        // Create new instance
-        var server = new Server(
-          'mongod',
-          {
-            dbpath: dbpath,
-            sslOnNormalPorts: null,
-            sslPEMKeyFile: f('%s/ssl/server.pem', __dirname),
-            sslAllowInvalidCertificates: null
-          },
-          {
-            ssl: true,
-            rejectUnauthorized: false
-          }
-        );
+    //     // Create new instance
+    //     var server = new Server(
+    //       'mongod',
+    //       {
+    //         dbpath: dbpath,
+    //         sslOnNormalPorts: null,
+    //         sslPEMKeyFile: f('%s/ssl/server.pem', __dirname),
+    //         sslAllowInvalidCertificates: null
+    //       },
+    //       {
+    //         ssl: true,
+    //         rejectUnauthorized: false
+    //       }
+    //     );
 
-        // Perform discovery
-        var result = yield server.discover();
-        // Skip ssl test
-        if (!result.ssl) return done();
+    //     // Perform discovery
+    //     var result = yield server.discover();
+    //     // Skip ssl test
+    //     if (!result.ssl) return done();
 
-        // Start process
-        yield server.start();
+    //     // Start process
+    //     yield server.start();
 
-        // Call ismaster
-        var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+    //     // Call ismaster
+    //     var ismaster = yield server.ismaster();
+    //     assert.equal(true, ismaster.ismaster);
 
-        // Stop the process
-        yield server.stop();
+    //     // Stop the process
+    //     yield server.stop();
 
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
-      });
-    });
+    //     // Finish test
+    //     done();
+    //   }).catch(function(err) {
+    //     console.log(err);
+    //   });
+    // });
 
-    it('test starting server instance with logpath', function(done) {
-      this.timeout(5000);
+    // it('test starting server instance with logpath', function(done) {
+    //   this.timeout(5000);
 
-      co(function*() {
-        var Server = require('../').Server;
+    //   co(function*() {
+    //     var Server = require('../').Server;
 
-        // Create dbpath
-        var dbpath = f('%s/../db', __dirname);
+    //     // Create dbpath
+    //     var dbpath = f('%s/../db', __dirname);
 
-        // Create dbpath
-        var logpath = f('%s/../output.log', __dirname);
+    //     // Create dbpath
+    //     var logpath = f('%s/../output.log', __dirname);
 
-        // Create new instance
-        var server = new Server('mongod', {
-          dbpath: dbpath,
-          logpath: logpath
-        });
+    //     // Create new instance
+    //     var server = new Server('mongod', {
+    //       dbpath: dbpath,
+    //       logpath: logpath
+    //     });
 
-        // Purge the directory
-        yield server.purge();
+    //     // Purge the directory
+    //     yield server.purge();
 
-        // Start process
-        yield server.start();
+    //     // Start process
+    //     yield server.start();
 
-        // Stop the process
-        yield server.stop();
+    //     // Stop the process
+    //     yield server.stop();
 
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
-      });
-    });
+    //     // Finish test
+    //     done();
+    //   }).catch(function(err) {
+    //     console.log(err);
+    //   });
+    // });
   });
 });
