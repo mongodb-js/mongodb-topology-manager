@@ -7,7 +7,7 @@ var co = require('co'),
 describe('Server', function() {
   describe('manager', function() {
     it('establish server version', function(done) {
-      this.timeout(50000);
+      this.timeout(5000);
 
       co(function*() {
         var Server = require('../').Server;
@@ -26,7 +26,7 @@ describe('Server', function() {
     });
 
     it('start server instance', function(done) {
-      this.timeout(50000);
+      this.timeout(5000);
 
       co(function*() {
         var Server = require('../').Server;
@@ -56,7 +56,7 @@ describe('Server', function() {
     });
 
     it('restart server instance', function(done) {
-      this.timeout(50000);
+      this.timeout(5000);
 
       co(function*() {
         var Server = require('../').Server;
@@ -95,7 +95,7 @@ describe('Server', function() {
     });
 
     it('call ismaster on server instance', function(done) {
-      this.timeout(50000);
+      this.timeout(5000);
 
       co(function*() {
         var Server = require('../').Server;
@@ -126,7 +126,7 @@ describe('Server', function() {
     });
 
     it('start up authenticated server', function(done) {
-      this.timeout(50000);
+      this.timeout(5000);
 
       co(function*() {
         var Server = require('../').Server;
@@ -158,7 +158,7 @@ describe('Server', function() {
     });
 
     it('start up ssl server server', function(done) {
-      this.timeout(50000);
+      this.timeout(5000);
 
       co(function*() {
         var Server = require('../').Server;

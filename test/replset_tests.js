@@ -7,7 +7,7 @@ var co = require('co'),
 describe('ReplSet', function() {
   describe('manager', function() {
     it('establish server version', function(done) {
-      this.timeout(1000000);
+      this.timeout(10000);
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
@@ -61,7 +61,7 @@ describe('ReplSet', function() {
     });
 
     it('start simple replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
-      this.timeout(1000000);
+      this.timeout(10000);
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
@@ -119,7 +119,7 @@ describe('ReplSet', function() {
     });
 
     it('start simple ssl replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
-      this.timeout(200000);
+      this.timeout(7500);
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
@@ -200,7 +200,7 @@ describe('ReplSet', function() {
     });
 
     it('stepdown primary', function(done) {
-      this.timeout(200000);
+      this.timeout(7500);
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
@@ -269,7 +269,7 @@ describe('ReplSet', function() {
     });
 
     it('add new member to set', function(done) {
-      this.timeout(200000);
+      this.timeout(7500);
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
@@ -350,7 +350,7 @@ describe('ReplSet', function() {
     });
 
     it('add new member to set with high priority', function(done) {
-      this.timeout(200000);
+      this.timeout(7500);
 
       // // Set the info level
       // Logger.setLevel('info');
@@ -435,7 +435,7 @@ describe('ReplSet', function() {
     });
 
     it('remove member from set', function(done) {
-      this.timeout(200000);
+      this.timeout(7500);
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
@@ -518,7 +518,7 @@ describe('ReplSet', function() {
     });
 
     it('put secondary in maintenance mode', function(done) {
-      this.timeout(200000);
+      this.timeout(7500);
 
       co(function*() {
         var ReplSet = require('../').ReplSet;
@@ -599,7 +599,7 @@ describe('ReplSet', function() {
     });
 
     it('reconfigure using existing configuration', function(done) {
-      this.timeout(200000);
+      this.timeout(7500);
 
       co(function*() {
         var ReplSet = require('../').ReplSet;

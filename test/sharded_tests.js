@@ -7,7 +7,7 @@ var co = require('co'),
 describe('Sharded', function() {
   describe('manager', function() {
     it('establish server version for sharded system', function(done) {
-      this.timeout(200000);
+      this.timeout(7500);
 
       co(function*() {
         var Sharded = require('../').Sharded;
@@ -26,7 +26,7 @@ describe('Sharded', function() {
     });
 
     it('create a sharded system with 2 shards', function(done) {
-      this.timeout(250000);
+      this.timeout(7500);
 
       co(function*() {
         var Sharded = require('../').Sharded;
@@ -179,7 +179,7 @@ describe('Sharded', function() {
     });
 
     it('create a sharded system with a single shard and take down mongos and bring it back', function(done) {
-      this.timeout(250000);
+      this.timeout(7500);
 
       co(function*() {
         var Sharded = require('../').Sharded;
@@ -305,7 +305,7 @@ describe('Sharded', function() {
     });
 
     it('properly tears down a sharded system', function(done) {
-      this.timeout(120000);
+      this.timeout(5000);
 
       const Sharded = require('../').Sharded;
       const topology = new Sharded({
