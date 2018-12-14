@@ -13,12 +13,15 @@ describe('Server', function() {
         var Server = require('../').Server;
         // Create new instance
         var server = new Server();
+
         // Perform discovery
         var version = yield server.discover();
+
         // Expect 3 integers
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
         assert.ok(typeof version.version[2] === 'number');
+
         done();
       }).catch(function(err) {
         console.log(err.stack);

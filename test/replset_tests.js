@@ -5,10 +5,10 @@ var co = require('co'),
   assert = require('assert');
 
 describe('ReplSet', function() {
+  this.timeout(100000);
+
   describe('manager', function() {
     it('establish server version', function(done) {
-      this.timeout(10000);
-
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -50,10 +50,12 @@ describe('ReplSet', function() {
 
         // Perform discovery
         var version = yield topology.discover();
+
         // Expect 3 integers
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
         assert.ok(typeof version.version[2] === 'number');
+
         done();
       }).catch(function(err) {
         console.log(err.stack);
@@ -61,8 +63,6 @@ describe('ReplSet', function() {
     });
 
     it('start simple replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
-      this.timeout(10000);
-
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -119,8 +119,6 @@ describe('ReplSet', function() {
     });
 
     it('start simple ssl replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -200,8 +198,6 @@ describe('ReplSet', function() {
     });
 
     it('stepdown primary', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -269,8 +265,6 @@ describe('ReplSet', function() {
     });
 
     it('add new member to set', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -350,8 +344,6 @@ describe('ReplSet', function() {
     });
 
     it('add new member to set with high priority', function(done) {
-      this.timeout(7500);
-
       // // Set the info level
       // Logger.setLevel('info');
 
@@ -435,8 +427,6 @@ describe('ReplSet', function() {
     });
 
     it('remove member from set', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -518,8 +508,6 @@ describe('ReplSet', function() {
     });
 
     it('put secondary in maintenance mode', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -599,8 +587,6 @@ describe('ReplSet', function() {
     });
 
     it('reconfigure using existing configuration', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
