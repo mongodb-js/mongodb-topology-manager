@@ -202,5 +202,39 @@ describe('Server', function() {
         console.log(err);
       });
     });
+
+    it('test starting server instance with logpath', function(done) {
+      this.timeout(5000);
+
+      co(function*() {
+        var Server = require('../').Server;
+
+        // Create dbpath
+        var dbpath = f('%s/../db', __dirname);
+
+        // Create dbpath
+        var logpath = f('%s/../output.log', __dirname);
+
+        // Create new instance
+        var server = new Server('mongod', {
+          dbpath: dbpath,
+          logpath: logpath
+        });
+
+        // Purge the directory
+        yield server.purge();
+
+        // Start process
+        yield server.start();
+
+        // Stop the process
+        yield server.stop();
+
+        // Finish test
+        done();
+      }).catch(function(err) {
+        console.log(err);
+      });
+    });
   });
 });
