@@ -8,115 +8,121 @@ describe('ReplSet', function() {
   this.timeout(250000);
 
   describe('manager', function() {
-    // it('establish server version', function(done) {
-    //   co(function*() {
-    //     var ReplSet = require('../').ReplSet;
+    it('establish server version', function(done) {
+      co(function*() {
+        var ReplSet = require('../').ReplSet;
 
-    //     // Create new instance
-    //     var topology = new ReplSet(
-    //       'mongod',
-    //       [
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31000,
-    //             dbpath: f('%s/../db/31000', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31001,
-    //             dbpath: f('%s/../db/31001', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // Type of node
-    //           arbiter: true,
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31002,
-    //             dbpath: f('%s/../db/31002', __dirname)
-    //           }
-    //         }
-    //       ],
-    //       {
-    //         replSet: 'rs'
-    //       }
-    //     );
+        // Create new instance
+        var topology = new ReplSet(
+          'mongod',
+          [
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31000,
+                dbpath: f('%s/../db/31000', __dirname)
+              }
+            },
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31001,
+                dbpath: f('%s/../db/31001', __dirname)
+              }
+            },
+            {
+              // Type of node
+              arbiter: true,
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31002,
+                dbpath: f('%s/../db/31002', __dirname)
+              }
+            }
+          ],
+          {
+            replSet: 'rs'
+          }
+        );
 
-    //     // Perform discovery
-    //     var version = yield topology.discover();
+        // Perform discovery
+        var version = yield topology.discover();
 
-    //     // Expect 3 integers
-    //     assert.ok(typeof version.version[0] === 'number');
-    //     assert.ok(typeof version.version[1] === 'number');
-    //     assert.ok(typeof version.version[2] === 'number');
+        // Expect 3 integers
+        assert.ok(typeof version.version[0] === 'number');
+        assert.ok(typeof version.version[1] === 'number');
+        assert.ok(typeof version.version[2] === 'number');
 
-    //     done();
-    //   }).catch(function(err) {
-    //     console.log(err.stack);
-    //   });
-    // });
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
 
-    // it('start simple replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
-    //   co(function*() {
-    //     var ReplSet = require('../').ReplSet;
+    it('start simple replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
+      co(function*() {
+        var ReplSet = require('../').ReplSet;
 
-    //     // Create new instance
-    //     var topology = new ReplSet(
-    //       'mongod',
-    //       [
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31000,
-    //             dbpath: f('%s/../db/31000', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31001,
-    //             dbpath: f('%s/../db/31001', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // Type of node
-    //           arbiter: true,
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31002,
-    //             dbpath: f('%s/../db/31002', __dirname)
-    //           }
-    //         }
-    //       ],
-    //       {
-    //         replSet: 'rs'
-    //       }
-    //     );
+        // Create new instance
+        var topology = new ReplSet(
+          'mongod',
+          [
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31000,
+                dbpath: f('%s/../db/31000', __dirname)
+              }
+            },
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31001,
+                dbpath: f('%s/../db/31001', __dirname)
+              }
+            },
+            {
+              // Type of node
+              arbiter: true,
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31002,
+                dbpath: f('%s/../db/31002', __dirname)
+              }
+            }
+          ],
+          {
+            replSet: 'rs'
+          }
+        );
 
-    //     // Purge any directories
-    //     yield topology.purge();
+        // Purge any directories
+        console.time('purge');
+        yield topology.purge();
+        console.timeEnd('purge');
 
-    //     // Start set
-    //     yield topology.start();
+        // Start set
+        console.time('start');
+        yield topology.start();
+        console.timeEnd('start');
 
-    //     // Stop the set
-    //     yield topology.stop();
+        // Stop the set
+        console.time('stop');
+        yield topology.stop();
+        console.timeEnd('stop');
 
-    //     // Finish up
-    //     done();
-    //   }).catch(function(err) {
-    //     console.log(err.stack);
-    //   });
-    // });
+        // Finish up
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
 
     // it('start simple ssl replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
     //   co(function*() {
@@ -264,96 +270,96 @@ describe('ReplSet', function() {
     //   });
     // });
 
-    it('add new member to set', function(done) {
-      co(function*() {
-        var ReplSet = require('../').ReplSet;
+    // it('add new member to set', function(done) {
+    //   co(function*() {
+    //     var ReplSet = require('../').ReplSet;
 
-        // Create new instance
-        var topology = new ReplSet(
-          'mongod',
-          [
-            {
-              // mongod process options
-              options: {
-                bind_ip: 'localhost',
-                port: 31000,
-                dbpath: f('%s/../db/31000', __dirname)
-              }
-            },
-            {
-              // mongod process options
-              options: {
-                bind_ip: 'localhost',
-                port: 31001,
-                dbpath: f('%s/../db/31001', __dirname)
-              }
-            },
-            {
-              // Type of node
-              arbiter: true,
-              // mongod process options
-              options: {
-                bind_ip: 'localhost',
-                port: 31002,
-                dbpath: f('%s/../db/31002', __dirname)
-              }
-            }
-          ],
-          {
-            replSet: 'rs',
-            electionCycleWaitMS: 50,
-            retryWaitMS: 10,
-            connectionTimeout: 500,
-            socketTimeout: 500
-          }
-        );
+    //     // Create new instance
+    //     var topology = new ReplSet(
+    //       'mongod',
+    //       [
+    //         {
+    //           // mongod process options
+    //           options: {
+    //             bind_ip: 'localhost',
+    //             port: 31000,
+    //             dbpath: f('%s/../db/31000', __dirname)
+    //           }
+    //         },
+    //         {
+    //           // mongod process options
+    //           options: {
+    //             bind_ip: 'localhost',
+    //             port: 31001,
+    //             dbpath: f('%s/../db/31001', __dirname)
+    //           }
+    //         },
+    //         {
+    //           // Type of node
+    //           arbiter: true,
+    //           // mongod process options
+    //           options: {
+    //             bind_ip: 'localhost',
+    //             port: 31002,
+    //             dbpath: f('%s/../db/31002', __dirname)
+    //           }
+    //         }
+    //       ],
+    //       {
+    //         replSet: 'rs',
+    //         electionCycleWaitMS: 50,
+    //         retryWaitMS: 10,
+    //         connectionTimeout: 500,
+    //         socketTimeout: 500
+    //       }
+    //     );
 
-        // Purge any directories
-        console.time('1');
-        yield topology.purge();
-        console.timeEnd('1');
+    //     // Purge any directories
+    //     console.time('1');
+    //     yield topology.purge();
+    //     console.timeEnd('1');
 
-        // Start set
-        console.time('2');
-        yield topology.start();
-        console.timeEnd('2');
+    //     // Start set
+    //     console.time('2');
+    //     yield topology.start();
+    //     console.timeEnd('2');
 
-        // Add a new member to the set
-        console.time('3');
-        yield topology.addMember(
-          {
-            options: {
-              bind_ip: 'localhost',
-              port: 31003,
-              dbpath: f('%s/../db/31003', __dirname)
-            }
-          },
-          {
-            returnImmediately: false,
-            force: false
-          }
-        );
-        console.timeEnd('3');
+    //     // Add a new member to the set
+    //     console.time('3');
+    //     yield topology.addMember(
+    //       {
+    //         options: {
+    //           bind_ip: 'localhost',
+    //           port: 31003,
+    //           dbpath: f('%s/../db/31003', __dirname)
+    //         }
+    //       },
+    //       {
+    //         returnImmediately: false,
+    //         force: false
+    //       }
+    //     );
+    //     console.timeEnd('3');
 
-        // Assert we have the expected number of instances
-        console.time('4');
-        var primary = yield topology.primary();
-        console.timeEnd('4');
-        console.time('5');
-        var ismaster = yield primary.ismaster();
-        console.timeEnd('5');
-        assert.equal(1, ismaster.arbiters.length);
-        assert.equal(3, ismaster.hosts.length);
+    //     // Assert we have the expected number of instances
+    //     console.time('4');
+    //     var primary = yield topology.primary();
+    //     console.timeEnd('4');
+    //     console.time('5');
+    //     var ismaster = yield primary.ismaster();
+    //     console.timeEnd('5');
+    //     assert.equal(1, ismaster.arbiters.length);
+    //     assert.equal(3, ismaster.hosts.length);
 
-        // Stop the set
-        yield topology.stop();
+    //     // Stop the set
+    //     yield topology.stop();
 
-        // Finish up
-        done();
-      }).catch(function(err) {
-        console.log(err.stack);
-      });
-    });
+    //     // Finish up
+    //     done();
+    //   }).catch(function(err) {
+    //     console.log(err.stack);
+    //   });
+    // });
 
     // it('add new member to set with high priority', function(done) {
     //   // // Set the info level
