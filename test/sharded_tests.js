@@ -5,20 +5,23 @@ var co = require('co'),
   assert = require('assert');
 
 describe('Sharded', function() {
+  this.timeout(100000);
+
   describe('manager', function() {
     it('establish server version for sharded system', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
         var topology = new Sharded('mongod');
+
         // Perform discovery
         var version = yield topology.discover();
+
         // Expect 3 integers
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
         assert.ok(typeof version.version[2] === 'number');
+
         done();
       }).catch(function(err) {
         console.log(err.stack);
@@ -26,8 +29,6 @@ describe('Sharded', function() {
     });
 
     it('create a sharded system with 2 shards', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
@@ -179,8 +180,6 @@ describe('Sharded', function() {
     });
 
     it('create a sharded system with a single shard and take down mongos and bring it back', function(done) {
-      this.timeout(7500);
-
       co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
@@ -305,8 +304,6 @@ describe('Sharded', function() {
     });
 
     it('properly tears down a sharded system', function(done) {
-      this.timeout(5000);
-
       const Sharded = require('../').Sharded;
       const topology = new Sharded({
         mongod: 'mongod',
