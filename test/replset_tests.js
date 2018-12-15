@@ -73,7 +73,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -81,7 +81,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -91,7 +91,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
