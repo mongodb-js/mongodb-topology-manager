@@ -240,8 +240,14 @@ describe('ReplSet', function() {
           ],
           {
             replSet: 'rs',
-            electionCycleWaitMS: 5000,
-            retryWaitMS: 1000
+            electionCycleWaitMS: 500,
+            retryWaitMS: 100,
+            configSettings: {
+              heartbeatTimeoutSecs: 1,
+              heartbeatIntervalMillis: 500,
+              electionTimeoutMillis: 2000,
+              catchUpTakeoverDelayMillis: 5000
+            }
           }
         );
 
@@ -249,19 +255,29 @@ describe('ReplSet', function() {
         yield topology.purge();
 
         // Start set
+        console.time('1');
         yield topology.start();
+        console.timeEnd('1');
 
         // Step down primary and block until we have a new primary
+        console.time('2');
         yield topology.stepDownPrimary(false, { stepDownSecs: 0, force: true });
+        console.timeEnd('2');
 
         // Step down primary and immediately return
+        console.time('3');
         yield topology.stepDownPrimary(true, { stepDownSecs: 0, force: true });
+        console.timeEnd('3');
 
         // Block waiting for a new primary to be elected
+        console.time('4');
         yield topology.waitForPrimary();
+        console.timeEnd('4');
 
         // Stop the set
+        console.time('5');
         yield topology.stop();
+        console.timeEnd('5');
 
         // Finish up
         done();
