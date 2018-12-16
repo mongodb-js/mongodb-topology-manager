@@ -220,22 +220,3 @@ Replset.prototype.addConfigurationServers | Add a set of nodes to be configurati
 ReplSet.prototype.addProxies | Add a set of mongo proxies to the cluster.
 ReplSet.prototype.enableSharding | Enable sharding on a specific db.
 ReplSet.prototype.shardCollection | Shard a collection.
-
-# Running Tests
-
-TODO Add me
-
-Make a note that you have to have mongodb-server tools installed, show how to do on Linux:
-```bash
-sudo apt-get install mongodb-server
-```
-
-For the above, not sure I want to specifically give the command because it's different on various Linux distributions.
-
-On Windows, it's a download you have to run through an installer most likely.
-
-Also have to have "mongod" in your PATH. This can be tested by running "mongod --help" from the command line and you should receive the usage page.
-
-# License
-
-TODO Add me

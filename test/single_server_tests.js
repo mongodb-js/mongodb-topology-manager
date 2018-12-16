@@ -5,7 +5,7 @@ var co = require('co'),
   assert = require('assert');
 
 describe('Server', function() {
-  this.timeout(10000);
+  this.timeout(50000);
 
   describe('manager', function() {
     it('establish server version', function(done) {
