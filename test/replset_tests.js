@@ -234,14 +234,8 @@ describe('ReplSet', function() {
           ],
           {
             replSet: 'rs',
-            electionCycleWaitMS: 500,
-            retryWaitMS: 100,
-            configSettings: {
-              heartbeatTimeoutSecs: 1,
-              heartbeatIntervalMillis: 500,
-              electionTimeoutMillis: 2000,
-              catchUpTakeoverDelayMillis: 5000
-            }
+            electionCycleWaitMS: 5000,
+            retryWaitMS: 1000
           }
         );
 
@@ -307,10 +301,8 @@ describe('ReplSet', function() {
           ],
           {
             replSet: 'rs',
-            electionCycleWaitMS: 50,
-            retryWaitMS: 10,
-            connectionTimeout: 500,
-            socketTimeout: 500
+            electionCycleWaitMS: 5000,
+            retryWaitMS: 1000
           }
         );
 

@@ -42,7 +42,7 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname),
                 shardsvr: null
@@ -50,7 +50,7 @@ describe('Sharded', function() {
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname),
                 shardsvr: null
@@ -61,7 +61,7 @@ describe('Sharded', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname),
                 shardsvr: null
@@ -78,7 +78,7 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31010,
                 dbpath: f('%s/../db/31010', __dirname),
                 shardsvr: null
@@ -86,7 +86,7 @@ describe('Sharded', function() {
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31011,
                 dbpath: f('%s/../db/31011', __dirname),
                 shardsvr: null
@@ -97,7 +97,7 @@ describe('Sharded', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31012,
                 dbpath: f('%s/../db/31012', __dirname),
                 shardsvr: null
@@ -114,21 +114,21 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35000,
                 dbpath: f('%s/../db/35000', __dirname)
               }
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35001,
                 dbpath: f('%s/../db/35001', __dirname)
               }
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35002,
                 dbpath: f('%s/../db/35002', __dirname)
               }
@@ -143,14 +143,14 @@ describe('Sharded', function() {
         yield topology.addProxies(
           [
             {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 51000,
-              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
             },
             {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 51001,
-              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
             }
           ],
           {
@@ -193,7 +193,7 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname),
                 shardsvr: null
@@ -201,7 +201,7 @@ describe('Sharded', function() {
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname),
                 shardsvr: null
@@ -212,7 +212,7 @@ describe('Sharded', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname),
                 shardsvr: null
@@ -229,21 +229,21 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35000,
                 dbpath: f('%s/../db/35000', __dirname)
               }
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35001,
                 dbpath: f('%s/../db/35001', __dirname)
               }
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35002,
                 dbpath: f('%s/../db/35002', __dirname)
               }
@@ -258,14 +258,14 @@ describe('Sharded', function() {
         yield topology.addProxies(
           [
             {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 51000,
-              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
             },
             {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 51001,
-              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
             }
           ],
           {
@@ -316,7 +316,7 @@ describe('Sharded', function() {
             [
               {
                 options: {
-                  bind_ip: 'localhost',
+                  bind_ip: '127.0.0.1',
                   port: 31000,
                   dbpath: f('%s/../db/31000', __dirname),
                   shardsvr: null
@@ -324,7 +324,7 @@ describe('Sharded', function() {
               },
               {
                 options: {
-                  bind_ip: 'localhost',
+                  bind_ip: '127.0.0.1',
                   port: 31001,
                   dbpath: f('%s/../db/31001', __dirname),
                   shardsvr: null
@@ -335,7 +335,7 @@ describe('Sharded', function() {
                 arbiter: true,
                 // mongod process options
                 options: {
-                  bind_ip: 'localhost',
+                  bind_ip: '127.0.0.1',
                   port: 31002,
                   dbpath: f('%s/../db/31002', __dirname),
                   shardsvr: null
@@ -352,21 +352,21 @@ describe('Sharded', function() {
             [
               {
                 options: {
-                  bind_ip: 'localhost',
+                  bind_ip: '127.0.0.1',
                   port: 35000,
                   dbpath: f('%s/../db/35000', __dirname)
                 }
               },
               {
                 options: {
-                  bind_ip: 'localhost',
+                  bind_ip: '127.0.0.1',
                   port: 35001,
                   dbpath: f('%s/../db/35001', __dirname)
                 }
               },
               {
                 options: {
-                  bind_ip: 'localhost',
+                  bind_ip: '127.0.0.1',
                   port: 35002,
                   dbpath: f('%s/../db/35002', __dirname)
                 }
@@ -381,14 +381,14 @@ describe('Sharded', function() {
           topology.addProxies(
             [
               {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 51000,
-                configdb: 'localhost:35000,localhost:35001,localhost:35002'
+                configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
               },
               {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 51001,
-                configdb: 'localhost:35000,localhost:35001,localhost:35002'
+                configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
               }
             ],
             {
