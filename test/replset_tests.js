@@ -5,7 +5,7 @@ var co = require('co'),
   assert = require('assert');
 
 describe('ReplSet', function() {
-  this.timeout(250000);
+  this.timeout(1000000);
 
   describe('manager', function() {
     it('establish server version', function(done) {

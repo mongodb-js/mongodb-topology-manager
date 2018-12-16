@@ -5,7 +5,7 @@ var co = require('co'),
   assert = require('assert');
 
 describe('Sharded', function() {
-  this.timeout(100000);
+  this.timeout(250000);
 
   describe('manager', function() {
     it('establish server version for sharded system', function(done) {

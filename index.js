@@ -1,6 +1,5 @@
 'use strict';
 
-// TODO Bump dependencies versions after I get it all working
 module.exports = {
   ConfigServers: require('./lib/config_servers'),
   Mongos: require('./lib/mongos'),
