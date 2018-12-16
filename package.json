@@ -23,7 +23,7 @@
     "api"
   ],
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "author": "Christian Amor Kvalheim",
   "license": "Apache-2.0",
