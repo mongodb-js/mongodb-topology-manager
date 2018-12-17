@@ -7,6 +7,7 @@
     "test": "test"
   },
   "scripts": {
+    "pretest": "kill-mongodb",
     "test": "npm run lint && mocha --exit --recursive test",
     "lint": "eslint index.js lib test",
     "format": "prettier --print-width 100 --tab-width 2 --single-quote --write index.js 'test/**/*.js' 'lib/**/*.js'",
@@ -44,6 +45,7 @@
     "eslint-plugin-prettier": "^3.0.0",
     "mocha": "^5.2.0",
     "prettier": "^1.15.3",
+    "kill-mongodb":"^1.0.1",
     "standard-version": "^4.4.0"
   }
 }
