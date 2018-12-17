@@ -118,7 +118,7 @@ astral-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-1.0.0.tgz#6c8c3fb827dd43ee3918f27b82782ab7658a6fd9"
   integrity sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg==
 
-async@^2.5.0:
+async@^2.1.2, async@^2.5.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
   integrity sha512-fNEiL2+AZt6AlAw/29Cr0UDe4sRAHCpEHh54WMz+Bb7QfNcFw4h3loofyJpLeQs4Yx7yuqu/2dLgM5hKOs6HlQ==
@@ -553,6 +553,13 @@ debug@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
+  dependencies:
+    ms "2.0.0"
+
+debug@^2.2.0:
+  version "2.6.9"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
+  integrity sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==
   dependencies:
     ms "2.0.0"
 
@@ -1223,6 +1230,14 @@ kerberos@^1.1.2:
     bindings "^1.3.0"
     nan "^2.10.0"
     prebuild-install "^5.0.0"
+
+kill-mongodb@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/kill-mongodb/-/kill-mongodb-1.0.1.tgz#5ebc04e3694d763dd04ae44347ba714c2c7c10fe"
+  integrity sha512-l3cZsAlTtrp5VUkBuQYBMQwUtvkkN4EaqiVjN3UAYQ03CxQ+qSRJk2snAdvHIGl1LpNolePolRtfaTDwFBi1pw==
+  dependencies:
+    async "^2.1.2"
+    debug "^2.2.0"
 
 lcid@^1.0.0:
   version "1.0.0"
