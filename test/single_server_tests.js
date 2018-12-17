@@ -183,7 +183,6 @@ describe('Server', function() {
         yield server.start();
 
         // Call ismaster
-        // Issue here
         var ismaster = yield server.ismaster();
         assert.equal(true, ismaster.ismaster);
 
