@@ -1,7 +1,7 @@
 'use strict';
 
 var co = require('co'),
-  f = require('util').format,
+  // f = require('util').format,
   assert = require('assert');
 
 describe('Sharded', function() {
