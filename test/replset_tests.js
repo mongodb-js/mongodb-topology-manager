@@ -54,8 +54,6 @@ describe('ReplSet', function() {
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
         assert.ok(typeof version.version[2] === 'number');
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
@@ -109,8 +107,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
@@ -187,8 +183,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
@@ -253,8 +247,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
@@ -331,8 +323,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
@@ -413,8 +403,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
@@ -493,8 +481,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
@@ -571,8 +557,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
@@ -641,8 +625,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
   });
