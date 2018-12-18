@@ -6,10 +6,10 @@ var co = require('co'),
 
 describe('ReplSet', function() {
   describe('manager', function() {
-    it('establish server version', function(done) {
+    it('establish server version', function() {
       this.timeout(1000000);
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -54,16 +54,15 @@ describe('ReplSet', function() {
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
         assert.ok(typeof version.version[2] === 'number');
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
     });
 
-    it('start simple replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
+    it('start simple replicaset with 1 primary, 1 secondary and one arbiter', function() {
       this.timeout(1000000);
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -110,18 +109,15 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-
-        // Finish up
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
     });
 
-    it('start simple ssl replicaset with 1 primary, 1 secondary and one arbiter', function(done) {
+    it('start simple ssl replicaset with 1 primary, 1 secondary and one arbiter', function() {
       this.timeout(200000);
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -181,7 +177,7 @@ describe('ReplSet', function() {
         // Perform discovery
         var result = yield topology.discover();
         // Skip ssl test
-        if (!result.ssl) return done();
+        if (!result.ssl) return;
 
         // Purge any directories
         yield topology.purge();
@@ -191,18 +187,15 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-
-        // Finish up
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
     });
 
-    it('stepdown primary', function(done) {
+    it('stepdown primary', function() {
       this.timeout(200000);
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -260,18 +253,15 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-
-        // Finish up
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
     });
 
-    it('add new member to set', function(done) {
+    it('add new member to set', function() {
       this.timeout(200000);
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -341,21 +331,18 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-
-        // Finish up
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
     });
 
-    it('add new member to set with high priority', function(done) {
+    it('add new member to set with high priority', function() {
       this.timeout(200000);
 
       // // Set the info level
       // Logger.setLevel('info');
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -426,18 +413,15 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-
-        // Finish up
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
     });
 
-    it('remove member from set', function(done) {
+    it('remove member from set', function() {
       this.timeout(200000);
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -509,18 +493,15 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-
-        // Finish up
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
     });
 
-    it('put secondary in maintenance mode', function(done) {
+    it('put secondary in maintenance mode', function() {
       this.timeout(200000);
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -590,18 +571,15 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-
-        // Finish up
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
     });
 
-    it('reconfigure using existing configuration', function(done) {
+    it('reconfigure using existing configuration', function() {
       this.timeout(200000);
 
-      co(function*() {
+      return co(function*() {
         var ReplSet = require('../').ReplSet;
 
         // Create new instance
@@ -663,9 +641,6 @@ describe('ReplSet', function() {
 
         // Stop the set
         yield topology.stop();
-
-        // Finish up
-        done();
       }).catch(function(err) {
         console.log(err.stack);
       });
