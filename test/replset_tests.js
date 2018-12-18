@@ -6,6 +6,8 @@ var co = require('co'),
   Promise = require('bluebird');
 
 describe('ReplSet', function() {
+  this.timeout(1000000);
+
   // Context variable stores all managers to clean up after test is completed
   var managers = [];
 
@@ -15,7 +17,6 @@ describe('ReplSet', function() {
 
   describe('manager', function() {
     it('establish server version', function() {
-      this.timeout(1000000);
 
       return co(function*() {
         var ReplSet = require('../').ReplSet;
@@ -27,7 +28,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -35,7 +36,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -45,7 +46,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
@@ -59,6 +60,7 @@ describe('ReplSet', function() {
 
         // Perform discovery
         var version = yield topology.discover();
+
         // Expect 3 integers
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
@@ -67,8 +69,6 @@ describe('ReplSet', function() {
     });
 
     it('start simple replicaset with 1 primary, 1 secondary and one arbiter', function() {
-      this.timeout(1000000);
-
       return co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -79,7 +79,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -87,7 +87,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -97,7 +97,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
@@ -121,8 +121,6 @@ describe('ReplSet', function() {
     });
 
     it('start simple ssl replicaset with 1 primary, 1 secondary and one arbiter', function() {
-      this.timeout(200000);
-
       return co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -133,7 +131,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname),
 
@@ -146,7 +144,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname),
 
@@ -161,7 +159,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname),
 
@@ -198,8 +196,6 @@ describe('ReplSet', function() {
     });
 
     it('stepdown primary', function() {
-      this.timeout(200000);
-
       return co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -210,7 +206,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -218,7 +214,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -228,7 +224,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
@@ -263,8 +259,6 @@ describe('ReplSet', function() {
     });
 
     it('add new member to set', function() {
-      this.timeout(200000);
-
       return co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -275,7 +269,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -283,7 +277,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -293,7 +287,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
@@ -317,7 +311,7 @@ describe('ReplSet', function() {
         yield topology.addMember(
           {
             options: {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 31003,
               dbpath: f('%s/../db/31003', __dirname)
             }
@@ -340,8 +334,6 @@ describe('ReplSet', function() {
     });
 
     it('add new member to set with high priority', function() {
-      this.timeout(200000);
-
       // // Set the info level
       // Logger.setLevel('info');
 
@@ -355,7 +347,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -363,7 +355,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -373,7 +365,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
@@ -398,7 +390,7 @@ describe('ReplSet', function() {
           {
             priority: 20,
             options: {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 31003,
               dbpath: f('%s/../db/31003', __dirname)
             }
@@ -421,8 +413,6 @@ describe('ReplSet', function() {
     });
 
     it('remove member from set', function() {
-      this.timeout(200000);
-
       return co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -433,7 +423,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -441,7 +431,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -451,7 +441,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
@@ -459,7 +449,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31003,
                 dbpath: f('%s/../db/31003', __dirname)
               }
@@ -500,8 +490,6 @@ describe('ReplSet', function() {
     });
 
     it('put secondary in maintenance mode', function() {
-      this.timeout(200000);
-
       return co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -512,7 +500,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -520,7 +508,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -530,7 +518,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
@@ -577,8 +565,6 @@ describe('ReplSet', function() {
     });
 
     it('reconfigure using existing configuration', function() {
-      this.timeout(200000);
-
       return co(function*() {
         var ReplSet = require('../').ReplSet;
 
@@ -589,7 +575,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -597,7 +583,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -605,7 +591,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
