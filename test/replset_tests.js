@@ -325,8 +325,8 @@ describe('ReplSet', function() {
         // Assert we have the expected number of instances
         var primary = yield topology.primary();
         var ismaster = yield primary.ismaster();
-        assert.equal(1, ismaster.arbiters.length);
-        assert.equal(3, ismaster.hosts.length);
+        assert.strictEqual(1, ismaster.arbiters.length);
+        assert.strictEqual(3, ismaster.hosts.length);
 
         // Stop the set
         yield topology.stop();
@@ -404,8 +404,8 @@ describe('ReplSet', function() {
         // Assert we have the expected number of instances
         var primary = yield topology.primary();
         var ismaster = yield primary.ismaster();
-        assert.equal(1, ismaster.arbiters.length);
-        assert.equal(3, ismaster.hosts.length);
+        assert.strictEqual(1, ismaster.arbiters.length);
+        assert.strictEqual(3, ismaster.hosts.length);
 
         // Stop the set
         yield topology.stop();
@@ -481,8 +481,8 @@ describe('ReplSet', function() {
         // Assert we have the expected number of instances
         var primary = yield topology.primary();
         var ismaster = yield primary.ismaster();
-        assert.equal(1, ismaster.arbiters.length);
-        assert.equal(2, ismaster.hosts.length);
+        assert.strictEqual(1, ismaster.arbiters.length);
+        assert.strictEqual(2, ismaster.hosts.length);
 
         // Stop the set
         yield topology.stop();
@@ -548,8 +548,8 @@ describe('ReplSet', function() {
 
         // Assert we have the expected number of instances
         var ismaster = yield secondaries[0].ismaster();
-        assert.equal(false, ismaster.secondary);
-        assert.equal(false, ismaster.ismaster);
+        assert.strictEqual(false, ismaster.secondary);
+        assert.strictEqual(false, ismaster.ismaster);
 
         // Wait for server to come back
         yield topology.maintenance(false, secondaries[0], {
@@ -557,7 +557,7 @@ describe('ReplSet', function() {
         });
 
         ismaster = yield secondaries[0].ismaster();
-        assert.equal(true, ismaster.secondary);
+        assert.strictEqual(true, ismaster.secondary);
 
         // Stop the set
         yield topology.stop();
@@ -624,7 +624,7 @@ describe('ReplSet', function() {
         // Get the current configuration
         var primary = yield topology.primary();
         var currentConfig = yield topology.configuration(primary);
-        assert.equal(10, currentConfig.members[2].priority);
+        assert.strictEqual(10, currentConfig.members[2].priority);
 
         // Stop the set
         yield topology.stop();

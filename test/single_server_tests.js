@@ -105,7 +105,7 @@ describe('Server', function() {
 
         // Call ismaster
         var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+        assert.strictEqual(true, ismaster.ismaster);
 
         // Stop the process
         yield server.stop();
@@ -131,7 +131,7 @@ describe('Server', function() {
 
         // Call ismaster
         var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+        assert.strictEqual(true, ismaster.ismaster);
 
         // Stop the process
         yield server.stop();
@@ -171,7 +171,7 @@ describe('Server', function() {
 
         // Call ismaster
         var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+        assert.strictEqual(true, ismaster.ismaster);
 
         // Stop the process
         yield server.stop();

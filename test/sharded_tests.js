@@ -400,7 +400,7 @@ describe('Sharded', function() {
         .then(() => topology.enableSharding('test'))
         .then(() => topology.shardCollection('test', 'testcollection', { _id: 1 }))
         .then(() => topology.stop())
-        .then(() => assert.equal(topology.state, 'stopped'));
+        .then(() => assert.strictEqual(topology.state, 'stopped'));
     });
   });
 });
