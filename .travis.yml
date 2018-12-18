@@ -4,10 +4,3 @@ dist: trusty
 language: node_js
 node_js:
   - '4'
-
-addons:
-  apt:
-    sources:
-    - mongodb-3.2-trusty
-    packages:
-    - mongodb-org-server
