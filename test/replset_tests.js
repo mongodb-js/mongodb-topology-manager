@@ -598,77 +598,77 @@ describe('ReplSet', function() {
       });
     });
 
-    // it('reconfigure using existing configuration', function(done) {
-    //   this.timeout(200000);
+    it('reconfigure using existing configuration', function(done) {
+      this.timeout(200000);
 
-    //   co(function*() {
-    //     var ReplSet = require('../').ReplSet;
+      co(function*() {
+        var ReplSet = require('../').ReplSet;
 
-    //     // Create new instance
-    //     var topology = new ReplSet(
-    //       'mongod',
-    //       [
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31000,
-    //             dbpath: f('%s/../db/31000', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31001,
-    //             dbpath: f('%s/../db/31001', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31002,
-    //             dbpath: f('%s/../db/31002', __dirname)
-    //           }
-    //         }
-    //       ],
-    //       {
-    //         replSet: 'rs',
-    //         electionCycleWaitMS: 5000,
-    //         retryWaitMS: 1000
-    //       }
-    //     );
+        // Create new instance
+        var topology = new ReplSet(
+          'mongod',
+          [
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31000,
+                dbpath: f('%s/../db/31000', __dirname)
+              }
+            },
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31001,
+                dbpath: f('%s/../db/31001', __dirname)
+              }
+            },
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31002,
+                dbpath: f('%s/../db/31002', __dirname)
+              }
+            }
+          ],
+          {
+            replSet: 'rs',
+            electionCycleWaitMS: 5000,
+            retryWaitMS: 1000
+          }
+        );
 
-    //     // Purge any directories
-    //     yield topology.purge();
+        // Purge any directories
+        yield topology.purge();
 
-    //     // Start set
-    //     yield topology.start();
+        // Start set
+        yield topology.start();
 
-    //     // Get the configuration
-    //     var config = JSON.parse(JSON.stringify(topology.configurations[0]));
-    //     config.members[2].priority = 10;
+        // Get the configuration
+        var config = JSON.parse(JSON.stringify(topology.configurations[0]));
+        config.members[2].priority = 10;
 
-    //     // Force the reconfiguration
-    //     yield topology.reconfigure(config, {
-    //       returnImmediately: false,
-    //       force: false
-    //     });
+        // Force the reconfiguration
+        yield topology.reconfigure(config, {
+          returnImmediately: false,
+          force: false
+        });
 
-    //     // Get the current configuration
-    //     var primary = yield topology.primary();
-    //     var currentConfig = yield topology.configuration(primary);
-    //     assert.equal(10, currentConfig.members[2].priority);
+        // Get the current configuration
+        var primary = yield topology.primary();
+        var currentConfig = yield topology.configuration(primary);
+        assert.equal(10, currentConfig.members[2].priority);
 
-    //     // Stop the set
-    //     yield topology.stop();
+        // Stop the set
+        yield topology.stop();
 
-    //     // Finish up
-    //     done();
-    //   }).catch(function(err) {
-    //     console.log(err.stack);
-    //   });
-    // });
+        // Finish up
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
   });
 });
