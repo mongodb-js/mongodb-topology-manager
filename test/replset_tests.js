@@ -434,169 +434,169 @@ describe('ReplSet', function() {
       });
     });
 
-    // it('remove member from set', function(done) {
-    //   this.timeout(200000);
+    it('remove member from set', function(done) {
+      this.timeout(200000);
 
-    //   co(function*() {
-    //     var ReplSet = require('../').ReplSet;
+      co(function*() {
+        var ReplSet = require('../').ReplSet;
 
-    //     // Create new instance
-    //     var topology = new ReplSet(
-    //       'mongod',
-    //       [
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31000,
-    //             dbpath: f('%s/../db/31000', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31001,
-    //             dbpath: f('%s/../db/31001', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // Type of node
-    //           arbiter: true,
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31002,
-    //             dbpath: f('%s/../db/31002', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31003,
-    //             dbpath: f('%s/../db/31003', __dirname)
-    //           }
-    //         }
-    //       ],
-    //       {
-    //         replSet: 'rs',
-    //         electionCycleWaitMS: 5000,
-    //         retryWaitMS: 1000
-    //       }
-    //     );
+        // Create new instance
+        var topology = new ReplSet(
+          'mongod',
+          [
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31000,
+                dbpath: f('%s/../db/31000', __dirname)
+              }
+            },
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31001,
+                dbpath: f('%s/../db/31001', __dirname)
+              }
+            },
+            {
+              // Type of node
+              arbiter: true,
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31002,
+                dbpath: f('%s/../db/31002', __dirname)
+              }
+            },
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31003,
+                dbpath: f('%s/../db/31003', __dirname)
+              }
+            }
+          ],
+          {
+            replSet: 'rs',
+            electionCycleWaitMS: 5000,
+            retryWaitMS: 1000
+          }
+        );
 
-    //     // Purge any directories
-    //     yield topology.purge();
+        // Purge any directories
+        yield topology.purge();
 
-    //     // Start set
-    //     yield topology.start();
+        // Start set
+        yield topology.start();
 
-    //     // Get all the secondaries
-    //     var secondaries = yield topology.secondaries();
+        // Get all the secondaries
+        var secondaries = yield topology.secondaries();
 
-    //     // Remove a member from the set
-    //     yield topology.removeMember(secondaries[0], {
-    //       returnImmediately: false,
-    //       force: false
-    //     });
+        // Remove a member from the set
+        yield topology.removeMember(secondaries[0], {
+          returnImmediately: false,
+          force: false
+        });
 
-    //     // Assert we have the expected number of instances
-    //     var primary = yield topology.primary();
-    //     var ismaster = yield primary.ismaster();
-    //     assert.equal(1, ismaster.arbiters.length);
-    //     assert.equal(2, ismaster.hosts.length);
+        // Assert we have the expected number of instances
+        var primary = yield topology.primary();
+        var ismaster = yield primary.ismaster();
+        assert.equal(1, ismaster.arbiters.length);
+        assert.equal(2, ismaster.hosts.length);
 
-    //     // Stop the set
-    //     yield topology.stop();
+        // Stop the set
+        yield topology.stop();
 
-    //     // Finish up
-    //     done();
-    //   }).catch(function(err) {
-    //     console.log(err.stack);
-    //   });
-    // });
+        // Finish up
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
 
-    // it('put secondary in maintenance mode', function(done) {
-    //   this.timeout(200000);
+    it('put secondary in maintenance mode', function(done) {
+      this.timeout(200000);
 
-    //   co(function*() {
-    //     var ReplSet = require('../').ReplSet;
+      co(function*() {
+        var ReplSet = require('../').ReplSet;
 
-    //     // Create new instance
-    //     var topology = new ReplSet(
-    //       'mongod',
-    //       [
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31000,
-    //             dbpath: f('%s/../db/31000', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31001,
-    //             dbpath: f('%s/../db/31001', __dirname)
-    //           }
-    //         },
-    //         {
-    //           // Type of node
-    //           arbiter: true,
-    //           // mongod process options
-    //           options: {
-    //             bind_ip: 'localhost',
-    //             port: 31002,
-    //             dbpath: f('%s/../db/31002', __dirname)
-    //           }
-    //         }
-    //       ],
-    //       {
-    //         replSet: 'rs',
-    //         electionCycleWaitMS: 5000,
-    //         retryWaitMS: 1000
-    //       }
-    //     );
+        // Create new instance
+        var topology = new ReplSet(
+          'mongod',
+          [
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31000,
+                dbpath: f('%s/../db/31000', __dirname)
+              }
+            },
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31001,
+                dbpath: f('%s/../db/31001', __dirname)
+              }
+            },
+            {
+              // Type of node
+              arbiter: true,
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31002,
+                dbpath: f('%s/../db/31002', __dirname)
+              }
+            }
+          ],
+          {
+            replSet: 'rs',
+            electionCycleWaitMS: 5000,
+            retryWaitMS: 1000
+          }
+        );
 
-    //     // Purge any directories
-    //     yield topology.purge();
+        // Purge any directories
+        yield topology.purge();
 
-    //     // Start set
-    //     yield topology.start();
+        // Start set
+        yield topology.start();
 
-    //     // Get all the secondaries
-    //     var secondaries = yield topology.secondaries();
+        // Get all the secondaries
+        var secondaries = yield topology.secondaries();
 
-    //     // Put secondary in maintenance mode
-    //     yield topology.maintenance(true, secondaries[0], {
-    //       returnImmediately: false
-    //     });
+        // Put secondary in maintenance mode
+        yield topology.maintenance(true, secondaries[0], {
+          returnImmediately: false
+        });
 
-    //     // Assert we have the expected number of instances
-    //     var ismaster = yield secondaries[0].ismaster();
-    //     assert.equal(false, ismaster.secondary);
-    //     assert.equal(false, ismaster.ismaster);
+        // Assert we have the expected number of instances
+        var ismaster = yield secondaries[0].ismaster();
+        assert.equal(false, ismaster.secondary);
+        assert.equal(false, ismaster.ismaster);
 
-    //     // Wait for server to come back
-    //     yield topology.maintenance(false, secondaries[0], {
-    //       returnImmediately: false
-    //     });
+        // Wait for server to come back
+        yield topology.maintenance(false, secondaries[0], {
+          returnImmediately: false
+        });
 
-    //     ismaster = yield secondaries[0].ismaster();
-    //     assert.equal(true, ismaster.secondary);
+        ismaster = yield secondaries[0].ismaster();
+        assert.equal(true, ismaster.secondary);
 
-    //     // Stop the set
-    //     yield topology.stop();
+        // Stop the set
+        yield topology.stop();
 
-    //     // Finish up
-    //     done();
-    //   }).catch(function(err) {
-    //     console.log(err.stack);
-    //   });
-    // });
+        // Finish up
+        done();
+      }).catch(function(err) {
+        console.log(err.stack);
+      });
+    });
 
     // it('reconfigure using existing configuration', function(done) {
     //   this.timeout(200000);
