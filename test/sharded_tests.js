@@ -6,10 +6,10 @@ var co = require('co'),
 
 describe('Sharded', function() {
   describe('manager', function() {
-    it('establish server version for sharded system', function(done) {
+    it('establish server version for sharded system', function() {
       this.timeout(200000);
 
-      co(function*() {
+      return co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
         var topology = new Sharded('mongod');
@@ -19,16 +19,13 @@ describe('Sharded', function() {
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
         assert.ok(typeof version.version[2] === 'number');
-        done();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
-    it('create a sharded system with 2 shards', function(done) {
+    it('create a sharded system with 2 shards', function() {
       this.timeout(250000);
 
-      co(function*() {
+      return co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
         var topology = new Sharded({
@@ -170,18 +167,13 @@ describe('Sharded', function() {
 
         // Stop the topology
         yield topology.stop();
-
-        // All done
-        done();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
-    it('create a sharded system with a single shard and take down mongos and bring it back', function(done) {
+    it('create a sharded system with a single shard and take down mongos and bring it back', function() {
       this.timeout(250000);
 
-      co(function*() {
+      return co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
         var topology = new Sharded({
@@ -296,15 +288,10 @@ describe('Sharded', function() {
 
         // Stop the topology
         yield topology.stop();
-
-        // All done
-        done();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
-    it('properly tears down a sharded system', function(done) {
+    it('properly tears down a sharded system', function() {
       this.timeout(120000);
 
       const Sharded = require('../').Sharded;
@@ -313,7 +300,7 @@ describe('Sharded', function() {
         mongos: 'mongos'
       });
 
-      Promise.resolve()
+      return Promise.resolve()
         .then(() => {
           return topology.addShard(
             [
@@ -404,8 +391,7 @@ describe('Sharded', function() {
         .then(() => topology.enableSharding('test'))
         .then(() => topology.shardCollection('test', 'testcollection', { _id: 1 }))
         .then(() => topology.stop())
-        .then(() => assert.equal(topology.state, 'stopped'))
-        .then(() => done(), done);
+        .then(() => assert.equal(topology.state, 'stopped'));
     });
   });
 });
