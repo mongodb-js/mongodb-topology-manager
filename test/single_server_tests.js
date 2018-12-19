@@ -6,10 +6,10 @@ var co = require('co'),
 
 describe('Server', function() {
   describe('manager', function() {
-    it('establish server version', function(done) {
+    it('establish server version', function() {
       this.timeout(50000);
 
-      co(function*() {
+      return co(function*() {
         var Server = require('../').Server;
         // Create new instance
         var server = new Server();
@@ -19,16 +19,13 @@ describe('Server', function() {
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
         assert.ok(typeof version.version[2] === 'number');
-        done();
-      }).catch(function(err) {
-        console.log(err.stack);
       });
     });
 
-    it('start server instance', function(done) {
+    it('start server instance', function() {
       this.timeout(50000);
 
-      co(function*() {
+      return co(function*() {
         var Server = require('../').Server;
 
         // Create dbpath
@@ -47,18 +44,13 @@ describe('Server', function() {
 
         // Stop the process
         yield server.stop();
-
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
       });
     });
 
-    it('restart server instance', function(done) {
+    it('restart server instance', function() {
       this.timeout(50000);
 
-      co(function*() {
+      return co(function*() {
         var Server = require('../').Server;
 
         // Create dbpath
@@ -86,18 +78,13 @@ describe('Server', function() {
 
         // Assert we had different processes
         assert.ok(pid1 !== pid2);
-
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
       });
     });
 
-    it('call ismaster on server instance', function(done) {
+    it('call ismaster on server instance', function() {
       this.timeout(50000);
 
-      co(function*() {
+      return co(function*() {
         var Server = require('../').Server;
 
         // Create dbpath
@@ -117,18 +104,13 @@ describe('Server', function() {
 
         // Stop the process
         yield server.stop();
-
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
       });
     });
 
-    it('start up authenticated server', function(done) {
+    it('start up authenticated server', function() {
       this.timeout(50000);
 
-      co(function*() {
+      return co(function*() {
         var Server = require('../').Server;
 
         // Create dbpath
@@ -149,18 +131,13 @@ describe('Server', function() {
 
         // Stop the process
         yield server.stop();
-
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
       });
     });
 
-    it('start up ssl server server', function(done) {
+    it('start up ssl server server', function() {
       this.timeout(50000);
 
-      co(function*() {
+      return co(function*() {
         var Server = require('../').Server;
 
         // Create dbpath
@@ -184,7 +161,7 @@ describe('Server', function() {
         // Perform discovery
         var result = yield server.discover();
         // Skip ssl test
-        if (!result.ssl) return done();
+        if (!result.ssl) return;
 
         // Start process
         yield server.start();
@@ -195,11 +172,6 @@ describe('Server', function() {
 
         // Stop the process
         yield server.stop();
-
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
       });
     });
   });
