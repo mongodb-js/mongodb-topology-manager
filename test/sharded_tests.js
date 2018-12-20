@@ -6,6 +6,7 @@ var co = require('co'),
   Promise = require('bluebird');
 
 describe('Sharded', function() {
+  // Context variable stores all managers to clean up after test is completed
   var managers = [];
 
   afterEach(function() {
