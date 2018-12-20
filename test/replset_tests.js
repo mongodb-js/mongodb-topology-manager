@@ -629,6 +629,8 @@ describe('ReplSet', function() {
     });
 
     it('test retrieve number of arbiters, secondary & primary', function(done) {
+      this.timeout(200000);
+
       co(function*() {
         var ReplSet = require('../').ReplSet;
 
