@@ -2,9 +2,17 @@
 
 var co = require('co'),
   f = require('util').format,
-  assert = require('assert');
+  assert = require('assert'),
+  Promise = require('bluebird');
 
 describe('Server', function() {
+  // Context variable stores all managers to clean up after test is completed
+  var managers = [];
+
+  afterEach(function() {
+    return Promise.map(managers, manager => manager.stop()).then(() => (managers = []));
+  });
+
   describe('manager', function() {
     it('establish server version', function() {
       this.timeout(50000);
@@ -35,6 +43,7 @@ describe('Server', function() {
         var server = new Server('mongod', {
           dbpath: dbpath
         });
+        managers.push(server);
 
         // Purge the directory
         yield server.purge();
@@ -60,6 +69,7 @@ describe('Server', function() {
         var server = new Server('mongod', {
           dbpath: dbpath
         });
+        managers.push(server);
 
         // Start process
         yield server.start();
@@ -94,6 +104,7 @@ describe('Server', function() {
         var server = new Server('mongod', {
           dbpath: dbpath
         });
+        managers.push(server);
 
         // Start process
         yield server.start();
@@ -121,6 +132,7 @@ describe('Server', function() {
           dbpath: dbpath,
           auth: null
         });
+        managers.push(server);
 
         // Start process
         yield server.start();
@@ -157,6 +169,7 @@ describe('Server', function() {
             rejectUnauthorized: false
           }
         );
+        managers.push(server);
 
         // Perform discovery
         var result = yield server.discover();
