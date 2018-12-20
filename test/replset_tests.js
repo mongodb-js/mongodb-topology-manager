@@ -644,5 +644,82 @@ describe('ReplSet', function() {
         yield topology.stop();
       });
     });
+
+    it('test retrieve number of arbiters, secondary & primary', function() {
+      this.timeout(200000);
+
+      return co(function*() {
+        var ReplSet = require('../').ReplSet;
+
+        // Create new instance
+        var topology = new ReplSet(
+          'mongod',
+          [
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31000,
+                dbpath: f('%s/../db/31000', __dirname)
+              }
+            },
+            {
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31001,
+                dbpath: f('%s/../db/31001', __dirname)
+              }
+            },
+            {
+              // Type of node
+              arbiter: true,
+              // mongod process options
+              options: {
+                bind_ip: 'localhost',
+                port: 31002,
+                dbpath: f('%s/../db/31002', __dirname)
+              }
+            }
+          ],
+          {
+            replSet: 'rs'
+          }
+        );
+        managers.push(topology);
+
+        // Purge any directories
+        yield topology.purge();
+
+        // Start set
+        yield topology.start();
+
+        // Retrieve servers
+        var primary = yield topology.primary();
+        var secondaries = yield topology.secondaries();
+        var passives = yield topology.passives();
+        var arbiters = yield topology.arbiters();
+
+        // Verify primary
+        assert.strictEqual(primary.host, 'localhost');
+        assert.ok(primary.port === 31000 || primary.port === 31001);
+
+        // Verify secondaries
+        assert.strictEqual(secondaries.length, 1);
+        assert.strictEqual(secondaries[0].host, 'localhost');
+        assert.strictEqual(secondaries[0].port, primary.port === 31000 ? 31001 : 31000);
+
+        // Verify passives
+        assert.strictEqual(passives.length, 0);
+
+        // Verify arbiters
+        assert.strictEqual(arbiters.length, 1);
+        assert.strictEqual(arbiters[0].host, 'localhost');
+        assert.strictEqual(arbiters[0].port, 31002);
+
+        // Stop the set
+        yield topology.stop();
+      });
+    });
   });
 });
