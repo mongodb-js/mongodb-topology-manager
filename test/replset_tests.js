@@ -2,9 +2,16 @@
 
 var co = require('co'),
   f = require('util').format,
-  assert = require('assert');
+  assert = require('assert'),
+  Promise = require('bluebird');
 
 describe('ReplSet', function() {
+  var managers = [];
+
+  afterEach(function() {
+    return Promise.map(managers, manager => manager.stop()).then(() => (managers = []));
+  });
+
   describe('manager', function() {
     it('establish server version', function() {
       this.timeout(1000000);
@@ -47,6 +54,7 @@ describe('ReplSet', function() {
             replSet: 'rs'
           }
         );
+        managers.push(topology);
 
         // Perform discovery
         var version = yield topology.discover();
@@ -98,6 +106,7 @@ describe('ReplSet', function() {
             replSet: 'rs'
           }
         );
+        managers.push(topology);
 
         // Purge any directories
         yield topology.purge();
@@ -169,6 +178,7 @@ describe('ReplSet', function() {
             rejectUnauthorized: false
           }
         );
+        managers.push(topology);
 
         // Perform discovery
         var result = yield topology.discover();
@@ -229,6 +239,7 @@ describe('ReplSet', function() {
             retryWaitMS: 1000
           }
         );
+        managers.push(topology);
 
         // Purge any directories
         yield topology.purge();
@@ -293,6 +304,7 @@ describe('ReplSet', function() {
             retryWaitMS: 1000
           }
         );
+        managers.push(topology);
 
         // Purge any directories
         yield topology.purge();
@@ -372,6 +384,7 @@ describe('ReplSet', function() {
             retryWaitMS: 1000
           }
         );
+        managers.push(topology);
 
         // Purge any directories
         yield topology.purge();
@@ -457,6 +470,7 @@ describe('ReplSet', function() {
             retryWaitMS: 1000
           }
         );
+        managers.push(topology);
 
         // Purge any directories
         yield topology.purge();
@@ -527,6 +541,7 @@ describe('ReplSet', function() {
             retryWaitMS: 1000
           }
         );
+        managers.push(topology);
 
         // Purge any directories
         yield topology.purge();
@@ -601,6 +616,7 @@ describe('ReplSet', function() {
             retryWaitMS: 1000
           }
         );
+        managers.push(topology);
 
         // Purge any directories
         yield topology.purge();

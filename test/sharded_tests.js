@@ -2,9 +2,16 @@
 
 var co = require('co'),
   f = require('util').format,
-  assert = require('assert');
+  assert = require('assert'),
+  Promise = require('bluebird');
 
 describe('Sharded', function() {
+  var managers = [];
+
+  afterEach(function() {
+    return Promise.map(managers, manager => manager.stop()).then(() => (managers = []));
+  });
+
   describe('manager', function() {
     it('establish server version for sharded system', function() {
       this.timeout(200000);
@@ -32,6 +39,7 @@ describe('Sharded', function() {
           mongod: 'mongod',
           mongos: 'mongos'
         });
+        managers.push(topology);
 
         // Add one shard
         yield topology.addShard(
@@ -180,6 +188,7 @@ describe('Sharded', function() {
           mongod: 'mongod',
           mongos: 'mongos'
         });
+        managers.push(topology);
 
         // Add one shard
         yield topology.addShard(
@@ -299,6 +308,7 @@ describe('Sharded', function() {
         mongod: 'mongod',
         mongos: 'mongos'
       });
+      managers.push(topology);
 
       return Promise.resolve()
         .then(() => {
