@@ -686,6 +686,7 @@ describe('ReplSet', function() {
             replSet: 'rs'
           }
         );
+        managers.push(topology);
 
         // Purge any directories
         yield topology.purge();
