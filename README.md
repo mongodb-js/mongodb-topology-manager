@@ -48,7 +48,7 @@ var topology = new ReplSet('mongod', [{
   }
 }, {
   // Type of node
-  arbiterOnly: true,
+  arbiter: true,
   // mongod process options
   options: {
     bind_ip: 'localhost', port: 31002, dbpath: './db-3'
