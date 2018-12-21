@@ -6,6 +6,8 @@ var co = require('co'),
   Promise = require('bluebird');
 
 describe('Sharded', function() {
+  this.timeout(250000);
+
   // Context variable stores all managers to clean up after test is completed
   var managers = [];
 
@@ -21,8 +23,10 @@ describe('Sharded', function() {
         var Sharded = require('../').Sharded;
         // Create new instance
         var topology = new Sharded('mongod');
+
         // Perform discovery
         var version = yield topology.discover();
+
         // Expect 3 integers
         assert.ok(typeof version.version[0] === 'number');
         assert.ok(typeof version.version[1] === 'number');
@@ -31,8 +35,6 @@ describe('Sharded', function() {
     });
 
     it('create a sharded system with 2 shards', function() {
-      this.timeout(250000);
-
       return co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
@@ -47,7 +49,7 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname),
                 shardsvr: null
@@ -55,7 +57,7 @@ describe('Sharded', function() {
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname),
                 shardsvr: null
@@ -66,7 +68,7 @@ describe('Sharded', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname),
                 shardsvr: null
@@ -83,7 +85,7 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31010,
                 dbpath: f('%s/../db/31010', __dirname),
                 shardsvr: null
@@ -91,7 +93,7 @@ describe('Sharded', function() {
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31011,
                 dbpath: f('%s/../db/31011', __dirname),
                 shardsvr: null
@@ -102,7 +104,7 @@ describe('Sharded', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31012,
                 dbpath: f('%s/../db/31012', __dirname),
                 shardsvr: null
@@ -119,21 +121,21 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35000,
                 dbpath: f('%s/../db/35000', __dirname)
               }
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35001,
                 dbpath: f('%s/../db/35001', __dirname)
               }
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35002,
                 dbpath: f('%s/../db/35002', __dirname)
               }
@@ -148,14 +150,14 @@ describe('Sharded', function() {
         yield topology.addProxies(
           [
             {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 51000,
-              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
             },
             {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 51001,
-              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
             }
           ],
           {
@@ -180,8 +182,6 @@ describe('Sharded', function() {
     });
 
     it('create a sharded system with a single shard and take down mongos and bring it back', function() {
-      this.timeout(250000);
-
       return co(function*() {
         var Sharded = require('../').Sharded;
         // Create new instance
@@ -196,7 +196,7 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname),
                 shardsvr: null
@@ -204,7 +204,7 @@ describe('Sharded', function() {
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname),
                 shardsvr: null
@@ -215,7 +215,7 @@ describe('Sharded', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname),
                 shardsvr: null
@@ -232,21 +232,21 @@ describe('Sharded', function() {
           [
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35000,
                 dbpath: f('%s/../db/35000', __dirname)
               }
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35001,
                 dbpath: f('%s/../db/35001', __dirname)
               }
             },
             {
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 35002,
                 dbpath: f('%s/../db/35002', __dirname)
               }
@@ -261,14 +261,14 @@ describe('Sharded', function() {
         yield topology.addProxies(
           [
             {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 51000,
-              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
             },
             {
-              bind_ip: 'localhost',
+              bind_ip: '127.0.0.1',
               port: 51001,
-              configdb: 'localhost:35000,localhost:35001,localhost:35002'
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
             }
           ],
           {
@@ -302,107 +302,118 @@ describe('Sharded', function() {
     });
 
     it('properly tears down a sharded system', function() {
-      this.timeout(120000);
+      return co(function*() {
+        const Sharded = require('../').Sharded;
+        const topology = new Sharded({
+          mongod: 'mongod',
+          mongos: 'mongos'
+        });
 
-      const Sharded = require('../').Sharded;
-      const topology = new Sharded({
-        mongod: 'mongod',
-        mongos: 'mongos'
+        // Add one shard
+        yield topology.addShard(
+          [
+            {
+              options: {
+                bind_ip: '127.0.0.1',
+                port: 31000,
+                dbpath: f('%s/../db/31000', __dirname),
+                shardsvr: null
+              }
+            },
+            {
+              options: {
+                bind_ip: '127.0.0.1',
+                port: 31001,
+                dbpath: f('%s/../db/31001', __dirname),
+                shardsvr: null
+              }
+            },
+            {
+              // Type of node
+              arbiter: true,
+              // mongod process options
+              options: {
+                bind_ip: '127.0.0.1',
+                port: 31002,
+                dbpath: f('%s/../db/31002', __dirname),
+                shardsvr: null
+              }
+            }
+          ],
+          {
+            replSet: 'rs1'
+          }
+        );
+
+        // Add configuration servers
+        yield topology.addConfigurationServers(
+          [
+            {
+              options: {
+                bind_ip: '127.0.0.1',
+                port: 35000,
+                dbpath: f('%s/../db/35000', __dirname)
+              }
+            },
+            {
+              options: {
+                bind_ip: '127.0.0.1',
+                port: 35001,
+                dbpath: f('%s/../db/35001', __dirname)
+              }
+            },
+            {
+              options: {
+                bind_ip: '127.0.0.1',
+                port: 35002,
+                dbpath: f('%s/../db/35002', __dirname)
+              }
+            }
+          ],
+          {
+            replSet: 'rs3'
+          }
+        );
+
+        // Add proxies
+        yield topology.addProxies(
+          [
+            {
+              bind_ip: '127.0.0.1',
+              port: 51000,
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
+            },
+            {
+              bind_ip: '127.0.0.1',
+              port: 51001,
+              configdb: '127.0.0.1:35000,127.0.0.1:35001,127.0.0.1:35002'
+            }
+          ],
+          {
+            binary: 'mongos'
+          }
+        );
+
+        // // Set the info level
+        // Logger.setLevel('info');
+
+        // Purge the topology
+        yield topology.purge();
+
+        // Start up topology
+        yield topology.start();
+
+        // Shard db
+        yield topology.enableSharding('test');
+
+        // Shard a collection
+        yield topology.shardCollection('test', 'testcollection', { _id: 1 });
+
+        // Stop the topology
+        yield topology.stop();
+
+        assert.strictEqual(topology.state, 'stopped');
       });
-      managers.push(topology);
-
-      return Promise.resolve()
-        .then(() => {
-          return topology.addShard(
-            [
-              {
-                options: {
-                  bind_ip: 'localhost',
-                  port: 31000,
-                  dbpath: f('%s/../db/31000', __dirname),
-                  shardsvr: null
-                }
-              },
-              {
-                options: {
-                  bind_ip: 'localhost',
-                  port: 31001,
-                  dbpath: f('%s/../db/31001', __dirname),
-                  shardsvr: null
-                }
-              },
-              {
-                // Type of node
-                arbiter: true,
-                // mongod process options
-                options: {
-                  bind_ip: 'localhost',
-                  port: 31002,
-                  dbpath: f('%s/../db/31002', __dirname),
-                  shardsvr: null
-                }
-              }
-            ],
-            {
-              replSet: 'rs1'
-            }
-          );
-        })
-        .then(() => {
-          return topology.addConfigurationServers(
-            [
-              {
-                options: {
-                  bind_ip: 'localhost',
-                  port: 35000,
-                  dbpath: f('%s/../db/35000', __dirname)
-                }
-              },
-              {
-                options: {
-                  bind_ip: 'localhost',
-                  port: 35001,
-                  dbpath: f('%s/../db/35001', __dirname)
-                }
-              },
-              {
-                options: {
-                  bind_ip: 'localhost',
-                  port: 35002,
-                  dbpath: f('%s/../db/35002', __dirname)
-                }
-              }
-            ],
-            {
-              replSet: 'rs3'
-            }
-          );
-        })
-        .then(() => {
-          topology.addProxies(
-            [
-              {
-                bind_ip: 'localhost',
-                port: 51000,
-                configdb: 'localhost:35000,localhost:35001,localhost:35002'
-              },
-              {
-                bind_ip: 'localhost',
-                port: 51001,
-                configdb: 'localhost:35000,localhost:35001,localhost:35002'
-              }
-            ],
-            {
-              binary: 'mongos'
-            }
-          );
-        })
-        .then(() => topology.purge())
-        .then(() => topology.start())
-        .then(() => topology.enableSharding('test'))
-        .then(() => topology.shardCollection('test', 'testcollection', { _id: 1 }))
-        .then(() => topology.stop())
-        .then(() => assert.equal(topology.state, 'stopped'));
     });
   });
 });

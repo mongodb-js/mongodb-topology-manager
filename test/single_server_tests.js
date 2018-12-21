@@ -6,6 +6,8 @@ var co = require('co'),
   Promise = require('bluebird');
 
 describe('Server', function() {
+  this.timeout(50000);
+
   // Context variable stores all managers to clean up after test is completed
   var managers = [];
 
@@ -15,8 +17,6 @@ describe('Server', function() {
 
   describe('manager', function() {
     it('establish server version', function() {
-      this.timeout(50000);
-
       return co(function*() {
         var Server = require('../').Server;
         // Create new instance
@@ -31,8 +31,6 @@ describe('Server', function() {
     });
 
     it('start server instance', function() {
-      this.timeout(50000);
-
       return co(function*() {
         var Server = require('../').Server;
 
@@ -57,8 +55,6 @@ describe('Server', function() {
     });
 
     it('restart server instance', function() {
-      this.timeout(50000);
-
       return co(function*() {
         var Server = require('../').Server;
 
@@ -92,8 +88,6 @@ describe('Server', function() {
     });
 
     it('call ismaster on server instance', function() {
-      this.timeout(50000);
-
       return co(function*() {
         var Server = require('../').Server;
 
@@ -111,7 +105,7 @@ describe('Server', function() {
 
         // Call ismaster
         var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+        assert.strictEqual(true, ismaster.ismaster);
 
         // Stop the process
         yield server.stop();
@@ -119,8 +113,6 @@ describe('Server', function() {
     });
 
     it('start up authenticated server', function() {
-      this.timeout(50000);
-
       return co(function*() {
         var Server = require('../').Server;
 
@@ -139,7 +131,7 @@ describe('Server', function() {
 
         // Call ismaster
         var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+        assert.strictEqual(true, ismaster.ismaster);
 
         // Stop the process
         yield server.stop();
@@ -147,8 +139,6 @@ describe('Server', function() {
     });
 
     it('start up ssl server server', function() {
-      this.timeout(50000);
-
       return co(function*() {
         var Server = require('../').Server;
 
@@ -181,7 +171,7 @@ describe('Server', function() {
 
         // Call ismaster
         var ismaster = yield server.ismaster();
-        assert.equal(true, ismaster.ismaster);
+        assert.strictEqual(true, ismaster.ismaster);
 
         // Stop the process
         yield server.stop();
