@@ -178,8 +178,8 @@ describe('Server', function() {
       });
     });
 
-    it('test starting server instance with logpath', function(done) {
-      co(function*() {
+    it('test starting server instance with logpath', function() {
+      return co(function*() {
         var Server = require('../').Server;
 
         // Create dbpath
@@ -193,6 +193,7 @@ describe('Server', function() {
           dbpath: dbpath,
           logpath: logpath
         });
+        managers.push(server);
 
         // Purge the directory
         yield server.purge();
@@ -202,11 +203,6 @@ describe('Server', function() {
 
         // Stop the process
         yield server.stop();
-
-        // Finish test
-        done();
-      }).catch(function(err) {
-        console.log(err);
       });
     });
   });
