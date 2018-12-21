@@ -17,7 +17,6 @@ describe('ReplSet', function() {
 
   describe('manager', function() {
     it('establish server version', function() {
-
       return co(function*() {
         var ReplSet = require('../').ReplSet;
 
