@@ -9,7 +9,7 @@
   "scripts": {
     "test": "npm run lint && mocha",
     "lint": "eslint index.js lib test",
-    "format": "prettier --print-width 100 --tab-width 2 --single-quote --write index.js 'test/**/*.js' 'lib/**/*.js'",
+    "format": "prettier --print-width 100 --tab-width 2 --single-quote --write index.js test/**/*.js lib/**/*.js",
     "release": "standard-version"
   },
   "repository": {
