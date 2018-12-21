@@ -644,7 +644,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31000,
                 dbpath: f('%s/../db/31000', __dirname)
               }
@@ -652,7 +652,7 @@ describe('ReplSet', function() {
             {
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31001,
                 dbpath: f('%s/../db/31001', __dirname)
               }
@@ -662,7 +662,7 @@ describe('ReplSet', function() {
               arbiter: true,
               // mongod process options
               options: {
-                bind_ip: 'localhost',
+                bind_ip: '127.0.0.1',
                 port: 31002,
                 dbpath: f('%s/../db/31002', __dirname)
               }
@@ -687,12 +687,12 @@ describe('ReplSet', function() {
         var arbiters = yield topology.arbiters();
 
         // Verify primary
-        assert.strictEqual(primary.host, 'localhost');
+        assert.strictEqual(primary.host, '127.0.0.1');
         assert.ok(primary.port === 31000 || primary.port === 31001);
 
         // Verify secondaries
         assert.strictEqual(secondaries.length, 1);
-        assert.strictEqual(secondaries[0].host, 'localhost');
+        assert.strictEqual(secondaries[0].host, '127.0.0.1');
         assert.strictEqual(secondaries[0].port, primary.port === 31000 ? 31001 : 31000);
 
         // Verify passives
@@ -700,7 +700,7 @@ describe('ReplSet', function() {
 
         // Verify arbiters
         assert.strictEqual(arbiters.length, 1);
-        assert.strictEqual(arbiters[0].host, 'localhost');
+        assert.strictEqual(arbiters[0].host, '127.0.0.1');
         assert.strictEqual(arbiters[0].port, 31002);
 
         // Stop the set
