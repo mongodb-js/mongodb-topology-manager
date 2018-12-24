@@ -44,6 +44,7 @@
     "eslint-plugin-prettier": "^2.7.0",
     "mocha": "^5.2.0",
     "prettier": "^1.15.3",
-    "standard-version": "^4.4.0"
+    "standard-version": "^4.4.0",
+    "mongodb-version-manager": "^1.3.0"
   }
 }
