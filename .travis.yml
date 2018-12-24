@@ -4,3 +4,8 @@ dist: trusty
 language: node_js
 node_js:
   - '4'
+
+env:
+  - MONGODB_VERSION=2.6.12
+  - MONGODB_VERSION=3.2.21
+  - MONGODB_VERSION=4.1.6
