@@ -2,7 +2,7 @@ const mvm = require('mongodb-version-manager');
 const Promise = require('bluebird');
 
 before(function() {
-  this.timeout(50000);
+  this.timeout(1000000);
 
   // Set default MONGODB_VERSION to be checked against later2
   process.env.MONGODB_VERSION = process.env.MONGODB_VERSION || '4.1.6';
