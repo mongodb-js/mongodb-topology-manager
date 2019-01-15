@@ -1,3 +1,5 @@
+'use strict';
+
 const mvm = require('mongodb-version-manager');
 const Promise = require('bluebird');
 
