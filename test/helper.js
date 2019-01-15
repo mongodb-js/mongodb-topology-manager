@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 before(function() {
   this.timeout(1000000);
 
-  // Set default MONGODB_VERSION to be checked against later
+  // Set default MONGODB_VERSION if not specified
   process.env.MONGODB_VERSION = process.env.MONGODB_VERSION.trim() || 'stable';
 
   console.log('Installing MongoDB server');
