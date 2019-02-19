@@ -36,7 +36,7 @@ It's equally easy to create a new Replicaset instance.
 var ReplSet = require('mongodb-topology-manager').ReplSet;
 
 // Create new instance
-var topology = new ReplSet('mongod', [{
+var server = new ReplSet('mongod', [{
   // mongod process options
   options: {
     bind_ip: 'localhost', port: 31000, dbpath: './db-1'
