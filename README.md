@@ -220,3 +220,9 @@ Replset.prototype.addConfigurationServers | Add a set of nodes to be configurati
 ReplSet.prototype.addProxies | Add a set of mongo proxies to the cluster.
 ReplSet.prototype.enableSharding | Enable sharding on a specific db.
 ReplSet.prototype.shardCollection | Shard a collection.
+
+## Running tests
+
+Tests can be run from the command line using npm like this: `npm test`
+
+By default, before the tests are ran, `mongodb-topology-manager` uses `mongodb-version-manager` to install the latest *stable* version of MongoDB. The `MONGODB_VERSION` environment variable can be set to specify a specific version using semantic versioning of MongoDB to install or `SKIP` to skip installing MongoDB and proceed directly with the tests.
